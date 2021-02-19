@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.261" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moveleirosystem.FXMLDocumentController">
+   <top>
+      <MenuBar prefHeight="20.0" BorderPane.alignment="CENTER">
+        <menus>
+            <Menu fx:id="menu_acesso" mnemonicParsing="false" text="Acesso">
+               <items>
+                  <MenuItem fx:id="mitem_a_backup" mnemonicParsing="false" onAction="#ClickMenuItemBackup" text="Backup" />
+                  <MenuItem fx:id="mitem_a_sair" mnemonicParsing="false" onAction="#ClickMenuItemSair" text="Sair" />
+               </items>
+            </Menu>
+          <Menu fx:id="menu_gerenciar" mnemonicParsing="false" text="Gerenciar">
+            <items>
+                  <MenuItem fx:id="mitem_g_caixa" mnemonicParsing="false" onAction="#ClickGerenciarCaixa" text="Caixa" />
+                  <MenuItem fx:id="mitem_g_cliente" mnemonicParsing="false" onAction="#ClickGerenciarCliente" text="Cliente" />
+              <MenuItem fx:id="mitem_g_usuario" mnemonicParsing="false" onAction="#ClickGerenciarUsuario" text="Usuario" />
+                  <MenuItem fx:id="mitem_g_fornecedor" mnemonicParsing="false" onAction="#ClickGerenciarFornecedor" text="Fornecedor" />
+                  <MenuItem fx:id="mitem_g_material" mnemonicParsing="false" onAction="#ClickGerenciarMaterial" text="Material" />
+            </items>
+          </Menu>
+            <Menu fx:id="menu_operacao" mnemonicParsing="false" text="Operação">
+               <items>
+                  <MenuItem fx:id="mitem_o_acerto" mnemonicParsing="false" onAction="#ClickOperacaoAcerto" text="Acerto" />
+                  <MenuItem fx:id="mitem_o_aquisicao" mnemonicParsing="false" onAction="#ClickOperacaoAquisicao" text="Aquisição" />
+                  <MenuItem fx:id="mitem_o_busca" mnemonicParsing="false" onAction="#ClickOperacaoBusca" text="Busca" />
+                  <MenuItem fx:id="mitem_o_pagamento" mnemonicParsing="false" onAction="#ClickOperacaoPagamento" text="Pagamento" />
+                  <MenuItem fx:id="mitem_o_recebimento" mnemonicParsing="false" onAction="#ClickOperacaoRecebimento" text="Recebimento" />
+                  <MenuItem fx:id="mitem_o_venda" mnemonicParsing="false" onAction="#ClickOperacaoVenda" text="Venda" />
+               </items>
+            </Menu>
+            <Menu fx:id="menu_relatorio" mnemonicParsing="false" text="Relatorio" />
+        </menus>
+      </MenuBar>
+   </top>
+   <center>
+      <VBox fx:id="vbox_center" alignment="CENTER" fillWidth="false" prefHeight="520.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.261" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Telas.FXMLUsuarioController">
+   <center>
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="960.0" BorderPane.alignment="CENTER">
+         <center>
+            <VBox alignment="CENTER" fillWidth="false" prefWidth="960.0" spacing="30.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox prefHeight="20.0" prefWidth="250.0" spacing="10.0">
+                     <children>
+                        <JFXTextField fx:id="tb_login" labelFloat="true" prefWidth="125.0" promptText="Login" />
+                        <JFXComboBox fx:id="cb_nivel" prefWidth="125.0" promptText="nivel" />
+                     </children>
+                  </HBox>
+                  <HBox fillHeight="false" prefHeight="20.0" prefWidth="250.0" spacing="15.0">
+                     <children>
+                        <JFXTextField fx:id="tb_senha" labelFloat="true" prefWidth="150.0" promptText="Senha" />
+                        <JFXCheckBox fx:id="check_substituir" text="Substituir" />
+                     </children>
+                  </HBox>
+                  <JFXTextField fx:id="tb_nome" labelFloat="true" prefWidth="250.0" promptText="Nome" />
+                  <JFXTextField fx:id="tb_fone" labelFloat="true" prefWidth="250.0" promptText="Fone" />
+               </children>
+            </VBox>
+         </center>
+         <top>
+            <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="960.0" spacing="25.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="btn_novo" mnemonicParsing="false" onAction="#ClickNovo" prefWidth="125.0" style="-fx-background-radius: 40;" text="Novo">
+                     <font>
+                        <Font name="Consolas" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btn_editar" mnemonicParsing="false" onAction="#ClickEditar" prefWidth="125.0" style="-fx-background-radius: 40;" text="Editar">
+                     <font>
+                        <Font name="Consolas" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btn_excluir" mnemonicParsing="false" onAction="#ClickExcluir" prefWidth="125.0" style="-fx-background-radius: 40;" text="Exluir">
+                     <font>
+                        <Font name="Consolas" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btn_cancelar" mnemonicParsing="false" onAction="#ClickCancelar" prefWidth="125.0" style="-fx-background-radius: 40;" text="Cancelar">
+                     <font>
+                        <Font name="Consolas" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+         </top>
+         <bottom>
+            <VBox alignment="CENTER" fillWidth="false" prefHeight="250.0" prefWidth="960.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="900.0" spacing="25.0">
+                     <children>
+                        <ComboBox fx:id="cb_filtro" prefWidth="125.0" />
+                        <TextField fx:id="tb_filtro" prefWidth="250.0" />
+                        <Button fx:id="btn_buscar" mnemonicParsing="false" onAction="#ClickBuscar" prefWidth="125.0" style="-fx-background-radius: 40;" text="Buscar">
+                           <font>
+                              <Font name="Consolas" size="14.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <TableView fx:id="table_usuario" onMouseClicked="#ClickTable" prefHeight="200.0" prefWidth="900.0">
+                     <columns>
+                        <TableColumn fx:id="c_nome" editable="false" prefWidth="300.0" resizable="false" sortable="false" text="Nome" />
+                        <TableColumn fx:id="c_nivel" editable="false" prefWidth="100.0" resizable="false" sortable="false" text="Nivel" />
+                        <TableColumn fx:id="c_login" editable="false" prefWidth="250.0" resizable="false" sortable="false" text="Login" />
+                        <TableColumn fx:id="c_fone" editable="false" prefWidth="250.0" resizable="false" sortable="false" text="Fone" />
+                     </columns>
+                  </TableView>
+               </children>
+            </VBox>
+         </bottom>
+      </BorderPane>
+   </center>
+</BorderPane>
