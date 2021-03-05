@@ -20,6 +20,7 @@
             <items>
                   <MenuItem fx:id="mitem_g_caixa" mnemonicParsing="false" onAction="#ClickGerenciarCaixa" text="Caixa" />
                   <MenuItem fx:id="mitem_g_cliente" mnemonicParsing="false" onAction="#ClickGerenciarCliente" text="Cliente" />
+                  <MenuItem fx:id="mitem_g_despesa" mnemonicParsing="false" onAction="#ClickGerenciarDespesa" text="Despesa" />
               <MenuItem fx:id="mitem_g_usuario" mnemonicParsing="false" onAction="#ClickGerenciarUsuario" text="Usuario" />
                   <MenuItem fx:id="mitem_g_fornecedor" mnemonicParsing="false" onAction="#ClickGerenciarFornecedor" text="Fornecedor" />
                   <MenuItem fx:id="mitem_g_material" mnemonicParsing="false" onAction="#ClickGerenciarMaterial" text="Material" />

@@ -2,7 +2,11 @@ package moveleirosystem;
 
 import Controladoras.CtrUsuario;
 import java.net.URL;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,6 +58,8 @@ public class FXMLDocumentController implements Initializable
     private MenuItem mitem_g_caixa;
     @FXML
     private MenuItem mitem_g_usuario;
+    @FXML
+    private MenuItem mitem_g_despesa;
     
     @Override
     public void initialize(URL url, ResourceBundle rb)
@@ -131,6 +137,7 @@ public class FXMLDocumentController implements Initializable
                 disableGerenciar(true);
                 mitem_g_cliente.setDisable(false);
                 mitem_g_material.setDisable(false);
+                mitem_g_despesa.setDisable(false);
                 disableOperacao(false);
                 mitem_o_aquisicao.setDisable(true);
                 disableRelatorio(true);
@@ -174,6 +181,12 @@ public class FXMLDocumentController implements Initializable
         loadNode("FXMLCliente.fxml");
     }
 
+    @FXML
+    private void ClickGerenciarDespesa(ActionEvent event)
+    {
+        loadNode("FXMLDespesa.fxml");
+    }
+    
     @FXML
     private void ClickGerenciarFornecedor(ActionEvent event)
     {
@@ -224,6 +237,7 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void ClickGerenciarCaixa(ActionEvent event)
     {
+        loadNode("FXMLCaixa.fxml");
     }
 
     @FXML
@@ -231,5 +245,7 @@ public class FXMLDocumentController implements Initializable
     {
         loadNode("FXMLUsuario.fxml");
     }
+
+    
     
 }

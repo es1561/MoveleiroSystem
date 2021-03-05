@@ -108,6 +108,27 @@ public class Conexao
         return max;
     }
 
+    public int getCount(String tabela)
+    {
+        String sql = "select count(*) from " + tabela;
+        int max = 0;
+        ResultSet rs = consultar(sql);
+        
+        try
+        {
+            if (rs.next())
+            {
+                max = rs.getInt(1);
+            }
+        } catch (SQLException sqlex)
+        {
+            erro = "Erro: " + sqlex.toString();
+            max = -1;
+        }
+        
+        return max;
+    }
+    
     public Connection getConnection()
     {
         return connect;
