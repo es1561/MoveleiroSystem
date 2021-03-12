@@ -178,6 +178,29 @@ public class Fornecedor
         return false;
     }
     
+    public Object searchByCodigo()
+    {
+        Object obj = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM Fornecedores WHERE for_cod = " + codigo;
+        
+        try
+        {
+            Connection connection = Banco.getConexao().getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet rs = statement.executeQuery();
+            
+            if(rs.next())
+                obj = new Fornecedor(rs.getInt("for_cod"), rs.getString("for_nome"), rs.getString("for_cnpj"), rs.getString("for_fone"), rs.getString("for_email"), rs.getString("for_contato"));
+        }
+        catch(SQLException ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+        
+        return obj;
+    }
+    
     public ObservableList<Object> searchByNome()
     {
         ObservableList<Object> list = FXCollections.observableArrayList();
@@ -190,7 +213,7 @@ public class Fornecedor
 
             ResultSet rs = statement.executeQuery();
             
-            if(rs.next())
+            while(rs.next())
                 list.add(new Fornecedor(rs.getInt("for_cod"), rs.getString("for_nome"), rs.getString("for_cnpj"), rs.getString("for_fone"), rs.getString("for_email"), rs.getString("for_contato")));
         }
         catch(SQLException ex)
@@ -213,7 +236,7 @@ public class Fornecedor
 
             ResultSet rs = statement.executeQuery();
             
-            if(rs.next())
+            while(rs.next())
                 list.add(new Fornecedor(rs.getInt("for_cod"), rs.getString("for_nome"), rs.getString("for_cnpj"), rs.getString("for_fone"), rs.getString("for_email"), rs.getString("for_contato")));
         }
         catch(SQLException ex)
@@ -246,4 +269,12 @@ public class Fornecedor
         
         return list;
     }
+
+    @Override
+    public String toString()
+    {
+        return nome + " [" + contato + "]";
+    }
+    
+    
 }

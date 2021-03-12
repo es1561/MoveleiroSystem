@@ -1,6 +1,9 @@
 package Controladoras;
 
 import Classes.Caixa;
+import Classes.Despesa;
+import Classes.Movimento;
+import Classes.TipoDespesa;
 import Classes.Usuario;
 import JDBC.Banco;
 import java.sql.Date;
@@ -61,6 +64,21 @@ public class CtrCaixa
         }
         
         return field;
+    }
+    
+    public ObservableList<Object> getList(Object obj)
+    {
+        return ((Caixa)obj).getList();
+    }
+    
+    public String getItemText(Object obj)
+    {
+        return ((Movimento)obj).toText();
+    }
+    
+    public boolean isOpen(String codigo)
+    {
+        return ((Caixa)new Caixa(codigo).searchByCodigo()).isOpen();
     }
     
     public boolean insert(double valor_a)
@@ -172,6 +190,74 @@ public class CtrCaixa
         }
         
         return flag;
+    }
+    
+    public boolean movimentar(int tipo, double valor)
+    {
+        boolean flag;        
+        
+        try
+        {
+            if(Banco.isConectado())
+            {
+                Object oc = new Caixa(Date.valueOf(LocalDate.now())).searchByToday();
+                
+                if(oc != null)
+                {
+                    Caixa caixa = (Caixa)(oc);                
+                    Despesa obj = new Despesa(new TipoDespesa(tipo), valor, Date.valueOf(LocalDate.now()), caixa, (Usuario)FXMLDocumentController.USER);
+
+                    flag = obj.insert();
+
+                    if(flag)
+                        Banco.getConexao().getConnection().commit();
+                    else
+                    {
+                        Banco.getConexao().getConnection().rollback();
+                        
+                        if(tipo == 1)
+                            throw new SQLException("Erro ao realizar Suprimento!");
+                        else
+                            throw new SQLException("Erro ao realizar Sangria!");
+                    }
+                }
+                else
+                    throw new SQLException("Caixa Fechado...");
+                
+            }
+            else
+                throw new SQLException("Banco Off-Line...");
+        }
+        catch(SQLException ex)
+        {
+            flag = false;
+            Banco.getConexao().setMessagemErro(ex.getMessage());
+            System.out.println(ex.getMessage());
+        }
+        
+        return flag;
+    }
+    
+    public ObservableList<Object> searchMovimentos()
+    {
+        ObservableList<Object> list = FXCollections.observableArrayList();
+        
+        try
+        {
+            if(Banco.isConectado())
+            {
+                
+            }
+            else
+                throw new SQLException("Banco Off-Line...");
+        }
+        catch(SQLException ex)
+        {
+            Banco.getConexao().setMessagemErro(ex.getMessage());
+            System.out.println(ex.getMessage());
+        }
+        
+        return list;
     }
     
     public Object searchByToday()

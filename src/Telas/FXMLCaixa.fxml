@@ -21,7 +21,7 @@
                   <Font name="Consolas" size="14.0" />
                </font>
             </Button>
-            <Button fx:id="btn_cancelar" mnemonicParsing="false" onAction="#ClickCancelar" prefWidth="200.0" style="-fx-background-radius: 40;" text="Cancelar">
+            <Button fx:id="btn_cancelar" mnemonicParsing="false" onAction="#ClickCancelar" prefWidth="200.0" style="-fx-background-radius: 40;" text="Fechar">
                <font>
                   <Font name="Consolas" size="14.0" />
                </font>

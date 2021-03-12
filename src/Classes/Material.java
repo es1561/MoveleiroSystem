@@ -328,4 +328,10 @@ public class Material
         
         return list;
     }
+
+    @Override
+    public String toString()
+    {
+        return nome;
+    }
 }

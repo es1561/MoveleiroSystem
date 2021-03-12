@@ -3,7 +3,6 @@ package Telas;
 import Controladoras.CtrCategoria;
 import Controladoras.CtrMaterial;
 import Controladoras.CtrTipoMaterial;
-import Controladoras.CtrUsuario;
 import JDBC.Banco;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;

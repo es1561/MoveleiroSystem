@@ -63,7 +63,7 @@ public class TipoDespesa
     public Object searchByCodigo()
     {
         Object obj = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM TipoDespesa WHERE tipo_des_cod = " + codigo;
+        String sql = "SELECT * FROM TipoDespesa WHERE tipo_des_codigo = " + codigo;
         
         try
         {
@@ -86,7 +86,7 @@ public class TipoDespesa
     public ObservableList<Object> searchAll()
     {
         ObservableList<Object> list = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM TipoDespesa";
+        String sql = "SELECT * FROM TipoDespesa WHERE tipo_des_codigo > 2";
         
         try
         {

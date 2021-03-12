@@ -1,5 +1,6 @@
 package Classes;
 
+import Controladoras.CtrDespesa;
 import JDBC.Banco;
 import java.sql.Connection;
 import java.sql.Date;
@@ -21,6 +22,7 @@ public class Caixa
     private double valor_a;
     private double valor_f;
     private String status;
+    private ObservableList<Object> list;
 
     public Caixa()
     {
@@ -111,7 +113,33 @@ public class Caixa
     
     public double getSaldo()
     {
-        return valor_a - valor_f;
+        double value = valor_a;
+        
+        for (Object obj : list)
+        {
+            if(obj instanceof Despesa)
+            {
+                Despesa des = (Despesa)obj;
+                
+                if(des.getTipo().getCodigo() == 1)//suprimento
+                    value += des.getValor();
+                else
+                    value -= des.getValor();
+            }
+            if(obj instanceof Pagamento)
+            {
+                Pagamento pag = (Pagamento)obj;
+                
+                value -= pag.getValor();
+            }
+        }
+        
+        return value;
+    }
+    
+    public ObservableList<Object> getList()
+    {
+        return list;
     }
     
     public void setUser_f(Usuario user_f)
@@ -129,6 +157,16 @@ public class Caixa
         this.valor_f = valor_f;
     }
 
+    public void setList(ObservableList<Object> list)
+    {
+        this.list = list;
+    }
+    
+    public boolean isOpen()
+    {
+        return status.compareTo("A") == 0;
+    }
+    
     public boolean insert()
     {
         String sql = "INSERT INTO Caixa(caixa_codigo, caixa_data, caixa_hora_a, caixa_valor_a, usu_login_a, caixa_status) ";
@@ -203,6 +241,47 @@ public class Caixa
         return false;
     }
     
+    public Object searchByCodigo()
+    {
+        Object obj = null;
+        String sql = "SELECT * FROM Caixa WHERE caixa_codigo = ?";
+        
+        try
+        {
+            Connection connection = Banco.getConexao().getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setString(1, codigo);
+            ResultSet rs = statement.executeQuery();
+            
+            if(rs.next())
+            {
+                Usuario user_a = (Usuario)(new Usuario(rs.getString("usu_login_a"), "").searchByLogin().get(0));
+                Usuario user_f = rs.getString("usu_login_f") != null ? (Usuario)(new Usuario(rs.getString("usu_login_f"), "").searchByLogin().get(0)) : null;
+                Caixa caixa = new Caixa(rs.getString("caixa_codigo"), rs.getDate("caixa_data"), user_a, user_f, rs.getString("caixa_hora_a"), rs.getString("caixa_hora_f"), rs.getDouble("caixa_valor_a"), rs.getDouble("caixa_valor_f"), rs.getString("caixa_status"));
+                ObservableList<Object> _list = FXCollections.observableArrayList(), _list_des, _list_pag;
+                
+                _list_des = new Despesa(caixa).searchByCaixa();
+                _list_pag = new Pagamento(caixa).searchByCaixa();
+                
+                for (Object item : _list_des)
+                    _list.add(item);
+                
+                for (Object item : _list_pag)
+                    _list.add(item);
+                
+                caixa.setList(_list);
+                obj = caixa;
+            }
+        }
+        catch(SQLException ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+        
+        return obj;
+    }
+    
     public Object searchByToday()
     {
         Object obj = null;
@@ -220,8 +299,20 @@ public class Caixa
             {
                 Usuario user_a = (Usuario)(new Usuario(rs.getString("usu_login_a"), "").searchByLogin().get(0));
                 Usuario user_f = rs.getString("usu_login_f") != null ? (Usuario)(new Usuario(rs.getString("usu_login_f"), "").searchByLogin().get(0)) : null;
+                Caixa caixa = new Caixa(rs.getString("caixa_codigo"), rs.getDate("caixa_data"), user_a, user_f, rs.getString("caixa_hora_a"), rs.getString("caixa_hora_f"), rs.getDouble("caixa_valor_a"), rs.getDouble("caixa_valor_f"), rs.getString("caixa_status"));
+                ObservableList<Object> _list = FXCollections.observableArrayList(), _list_des, _list_pag;
                 
-                obj = new Caixa(rs.getString("caixa_codigo"), rs.getDate("caixa_data"), user_a, user_f, rs.getString("caixa_hora_a"), rs.getString("caixa_hora_f"), rs.getDouble("caixa_valor_a"), rs.getDouble("caixa_valor_f"), rs.getString("caixa_status"));
+                _list_des = new Despesa(caixa).searchByCaixa();
+                _list_pag = new Pagamento(caixa).searchByCaixa();
+                
+                for (Object item : _list_des)
+                    _list.add(item);
+                
+                for (Object item : _list_pag)
+                    _list.add(item);
+                
+                caixa.setList(_list);
+                obj = caixa;
             }
         }
         catch(SQLException ex)
@@ -246,7 +337,28 @@ public class Caixa
             ResultSet rs = statement.executeQuery();
             
             while(rs.next())
-                list.add(new Caixa(rs.getString("caixa_codigo"), rs.getDate("caixa_data"), (Usuario)(new Usuario(rs.getString("usu_login_a"), "").searchByLogin()), (Usuario)(new Usuario(rs.getString("usu_login_f"), "").searchByLogin()), rs.getString("caixa_hora_a"), rs.getString("caixa_hora_f"), rs.getDouble("caixa_valor_a"), rs.getDouble("caixa_valor_f"), rs.getString("caixa_status")));
+            {
+                Object obj;
+                Usuario user_a = (Usuario)(new Usuario(rs.getString("usu_login_a"), "").searchByLogin().get(0));
+                Usuario user_f = rs.getString("usu_login_f") != null ? (Usuario)(new Usuario(rs.getString("usu_login_f"), "").searchByLogin().get(0)) : null;
+                Caixa caixa = new Caixa(rs.getString("caixa_codigo"), rs.getDate("caixa_data"), user_a, user_f, rs.getString("caixa_hora_a"), rs.getString("caixa_hora_f"), rs.getDouble("caixa_valor_a"), rs.getDouble("caixa_valor_f"), rs.getString("caixa_status"));
+                ObservableList<Object> _list = FXCollections.observableArrayList(), _list_des, _list_pag;
+                
+                _list_des = new Despesa(caixa).searchByCaixa();
+                _list_pag = new Pagamento(caixa).searchByCaixa();
+                
+                for (Object item : _list_des)
+                    _list.add(item);
+                
+                for (Object item : _list_pag)
+                    _list.add(item);
+                
+                caixa.setList(_list);
+                obj = caixa;
+                
+                list.add(obj);
+            }
+                
         }
         catch(SQLException ex)
         {
@@ -269,7 +381,27 @@ public class Caixa
             ResultSet rs = statement.executeQuery();
             
             while(rs.next())
-                list.add(new Caixa(rs.getString("caixa_codigo"), rs.getDate("caixa_data"), (Usuario)(new Usuario(rs.getString("usu_login_a"), "").searchByLogin()), (Usuario)(new Usuario(rs.getString("usu_login_f"), "").searchByLogin()), rs.getString("caixa_hora_a"), rs.getString("caixa_hora_f"), rs.getDouble("caixa_valor_a"), rs.getDouble("caixa_valor_f"), rs.getString("caixa_status")));
+            {
+                Object obj;
+                Usuario user_a = (Usuario)(new Usuario(rs.getString("usu_login_a"), "").searchByLogin().get(0));
+                Usuario user_f = rs.getString("usu_login_f") != null ? (Usuario)(new Usuario(rs.getString("usu_login_f"), "").searchByLogin().get(0)) : null;
+                Caixa caixa = new Caixa(rs.getString("caixa_codigo"), rs.getDate("caixa_data"), user_a, user_f, rs.getString("caixa_hora_a"), rs.getString("caixa_hora_f"), rs.getDouble("caixa_valor_a"), rs.getDouble("caixa_valor_f"), rs.getString("caixa_status"));
+                ObservableList<Object> _list = FXCollections.observableArrayList(), _list_des, _list_pag;
+                
+                _list_des = new Despesa(caixa).searchByCaixa();
+                _list_pag = new Pagamento(caixa).searchByCaixa();
+                
+                for (Object item : _list_des)
+                    _list.add(item);
+                
+                for (Object item : _list_pag)
+                    _list.add(item);
+                
+                caixa.setList(_list);
+                obj = caixa;
+                
+                list.add(obj);
+            }
         }
         catch(SQLException ex)
         {
@@ -277,5 +409,11 @@ public class Caixa
         }
         
         return list;
+    }
+
+    @Override
+    public String toString()
+    {
+        return codigo;
     }
 }

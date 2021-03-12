@@ -172,9 +172,10 @@ CREATE TABLE public.Pagamento (
 CREATE TABLE public.ItemAquisicao (
                 aqui_codigo INTEGER NOT NULL,
                 mat_codigo INTEGER NOT NULL,
+                item_aqui_codigo INTEGER NOT NULL,
                 item_aqui_valor NUMERIC(10,2) NOT NULL,
                 item_aqui_quant INTEGER NOT NULL,
-                CONSTRAINT pk_itemaquisicao PRIMARY KEY (aqui_codigo, mat_codigo)
+                CONSTRAINT pk_itemaquisicao PRIMARY KEY (aqui_codigo, mat_codigo, item_aqui_codigo)
 );
 
 

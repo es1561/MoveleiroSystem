@@ -207,6 +207,7 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void ClickOperacaoAquisicao(ActionEvent event)
     {
+        loadNode("FXMLAquisicao.fxml");
     }
 
     @FXML
@@ -217,6 +218,7 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void ClickOperacaoPagamento(ActionEvent event)
     {
+        loadNode("FXMLPagamento.fxml");
     }
 
     @FXML

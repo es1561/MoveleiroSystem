@@ -72,15 +72,20 @@ public class CtrDespesa
                     Caixa caixa = (Caixa)(oc);                
                     Despesa obj = new Despesa((TipoDespesa)tipo, valor, Date.valueOf(LocalDate.now()), caixa, (Usuario)FXMLDocumentController.USER);
 
-                    flag = obj.insert();
-
-                    if(flag)
-                        Banco.getConexao().getConnection().commit();
-                    else
+                    if(((TipoDespesa)tipo).getCodigo() > 1 && (caixa.getSaldo() - valor) >= 0)
                     {
-                        Banco.getConexao().getConnection().rollback();
-                        throw new SQLException("Erro ao inserir Material!");
+                        flag = obj.insert();
+
+                        if(flag)
+                            Banco.getConexao().getConnection().commit();
+                        else
+                        {
+                            Banco.getConexao().getConnection().rollback();
+                            throw new SQLException("Erro ao inserir Material!");
+                        }
                     }
+                    else
+                        throw new SQLException("Fundos insuficiente...");
                 }
                 else
                     throw new SQLException("Caixa Fechado...");
@@ -98,4 +103,6 @@ public class CtrDespesa
         
         return flag;
     }
+    
+    
 }

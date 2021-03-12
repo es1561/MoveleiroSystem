@@ -1,6 +1,7 @@
 package Telas;
 
 import Controladoras.CtrCaixa;
+import Controladoras.CtrDespesa;
 import JDBC.Banco;
 import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
@@ -65,9 +66,11 @@ public class FXMLCaixaController implements Initializable
             tb_caixa.setText(CtrCaixa.instancia().getField(_selected, "codigo"));
             tb_user.setText(CtrCaixa.instancia().getField(_selected, "usuario_a"));
             tb_abertura.setText(CtrCaixa.instancia().getField(_selected, "valor_a"));
-            lb_saldo.setText(CtrCaixa.instancia().getField(_selected, "saldo"));
+            
             
             list_movimento.setDisable(false);
+            list_movimento.setItems(CtrCaixa.instancia().getList(_selected));
+            lb_saldo.setText(CtrCaixa.instancia().getField(_selected, "saldo"));
             
             btn_sangria.setDisable(false);
             tb_valor.setDisable(false);
@@ -131,16 +134,46 @@ public class FXMLCaixaController implements Initializable
     @FXML
     private void ClickLista(MouseEvent event)
     {
+        if(list_movimento.getSelectionModel().getSelectedIndex() >= 0)
+        {
+            Object obj = list_movimento.getSelectionModel().getSelectedItem();
+            
+            ta_movimento.setText(CtrCaixa.instancia().getItemText(obj));
+        }
     }
 
     @FXML
     private void ClickSangria(ActionEvent event)
     {
+        if(!tb_valor.getText().isEmpty())
+        {
+            if(CtrCaixa.instancia().movimentar(2, Double.valueOf(tb_valor.getText())))
+                new Alert(Alert.AlertType.INFORMATION, "Sangria Realizada!", ButtonType.OK).show();
+            else
+            {
+                new Alert(Alert.AlertType.ERROR, Banco.getConexao().getMensagemErro(), ButtonType.OK).show();
+                System.out.println(Banco.getConexao().getMensagemErro());
+            }
+            
+            setupCaixa();
+        }
     }
 
     @FXML
     private void ClickSuprimento(ActionEvent event)
     {
+        if(!tb_valor.getText().isEmpty())
+        {
+            if(CtrCaixa.instancia().movimentar(1, Double.valueOf(tb_valor.getText())))
+                new Alert(Alert.AlertType.INFORMATION, "Suprimento Realizada!", ButtonType.OK).show();
+            else
+            {
+                new Alert(Alert.AlertType.ERROR, Banco.getConexao().getMensagemErro(), ButtonType.OK).show();
+                System.out.println(Banco.getConexao().getMensagemErro());
+            }
+            
+            setupCaixa();
+        }
     }
 
 }
