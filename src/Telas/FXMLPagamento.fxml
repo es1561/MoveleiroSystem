@@ -31,11 +31,10 @@
             <TableView fx:id="table_pagamento" onMouseClicked="#ClickTable" prefHeight="200.0" prefWidth="600.0">
               <columns>
                 <TableColumn fx:id="c_codigo" editable="false" prefWidth="75.0" resizable="false" text="Codigo" />
+                <TableColumn fx:id="c_aquisicao" editable="false" prefWidth="200.0" resizable="false" text="Aquisição" />
                   <TableColumn fx:id="c_parcela" editable="false" prefWidth="75.0" resizable="false" text="Parcela" />
                   <TableColumn fx:id="c_valor" editable="false" prefWidth="100.0" resizable="false" text="Valor" />
-                  <TableColumn fx:id="c_vencimento" editable="false" prefWidth="100.0" resizable="false" text="Vencimento" />
-                <TableColumn fx:id="c_aquisicao" editable="false" prefWidth="100.0" resizable="false" text="Aquisição" />
-                  <TableColumn fx:id="c_caixa" editable="false" prefWidth="150.0" resizable="false" text="Caixa" />
+                  <TableColumn fx:id="c_vencimento" editable="false" prefWidth="150.0" resizable="false" text="Vencimento" />
               </columns>
             </TableView>
          </children>

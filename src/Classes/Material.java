@@ -191,6 +191,49 @@ public class Material
         return false;
     }
     
+    private void updateEstoque()
+    {
+        String sql = "SELECT mat_estoque FROM Material WHERE mat_codigo = " + codigo;
+        
+        try
+        {
+            Connection connection = Banco.getConexao().getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet rs = statement.executeQuery();
+            
+            while(rs.next())
+                estoque = rs.getInt("mat_estoque");
+        }
+        catch(SQLException ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    public boolean addEstoque(int value)
+    {
+        String sql = "UPDATE Material SET mat_estoque = ? WHERE mat_codigo = ?";
+        
+        try
+        {
+            updateEstoque();
+            Connection connection = Banco.getConexao().getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setInt(1, estoque + value);
+            statement.setInt(2, codigo);
+
+            return statement.executeUpdate() > 0;
+        }
+        catch(SQLException ex)
+        {
+            Banco.getConexao().setMessagemErro(ex.getMessage());
+        }
+
+        return false;
+    }
+    
     public boolean delete()
     {
         String sql = "DELETE FROM Material WHERE mat_codigo = ?";
@@ -238,7 +281,7 @@ public class Material
     public ObservableList<Object> searchByNome()
     {
         ObservableList<Object> list = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM Material WHERE mat_nome LIKE '" + nome + "%'";
+        String sql = "SELECT * FROM Material WHERE LOWER(mat_nome) LIKE '" + nome + "%'";
         
         try
         {

@@ -1,7 +1,6 @@
 package Telas;
 
 import Controladoras.CtrUsuario;
-import JDBC.Banco;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
@@ -43,7 +42,10 @@ public class FXMLLoginController implements Initializable
             FXMLDocumentController.APP.disableLogin(Integer.valueOf(CtrUsuario.instancia().getField(user, "nivel")));
         }
         else
+        {
+            tb_senha.clear();
             new Alert(Alert.AlertType.ERROR, "Login e(ou) Senha Invalidos!", ButtonType.OK).show();
+        }
     }
     
 }

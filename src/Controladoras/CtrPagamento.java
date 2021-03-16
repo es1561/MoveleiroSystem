@@ -60,6 +60,17 @@ public class CtrPagamento
         return field;
     }
     
+    public Object makeObject(double valor, int parcela, Date dt_venc)
+    {
+        Object oc = new Caixa(Date.valueOf(LocalDate.now())).searchByToday();
+        Object obj = null;
+        
+        if(oc != null)
+            obj = new Pagamento(valor, parcela, dt_venc, (Caixa)oc);
+        
+        return obj;
+    }
+    
     public boolean insert(double valor, int parcela, Object aqui)
     {
         boolean flag;        
@@ -71,23 +82,18 @@ public class CtrPagamento
                 Object oc = new Caixa(Date.valueOf(LocalDate.now())).searchByToday();
                 
                 if(oc != null)
-                {               
-                    if((((Caixa)oc).getSaldo() - valor) >= 0)
-                    {
-                        Pagamento obj = new Pagamento(valor, parcela, Date.valueOf(LocalDate.now().plusMonths(parcela)), (Aquisicao)aqui, (Caixa)oc);
+                {    
+                    Pagamento obj = new Pagamento(valor, parcela, Date.valueOf(LocalDate.now().plusMonths(parcela)), (Aquisicao)aqui, (Caixa)oc);
 
-                        flag = obj.insert();
+                    flag = obj.insert();
 
-                        if(flag)
-                            Banco.getConexao().getConnection().commit();
-                        else
-                        {
-                            Banco.getConexao().getConnection().rollback();
-                            throw new SQLException("Erro ao registrar Pagamento!");
-                        }
-                    }
+                    if(flag)
+                        Banco.getConexao().getConnection().commit();
                     else
-                        throw new SQLException("Fundos insuficiente...");
+                    {
+                        Banco.getConexao().getConnection().rollback();
+                        throw new SQLException("Erro ao registrar Pagamento!");
+                    }
                 }
                 else
                     throw new SQLException("Caixa Fechado...");
@@ -106,7 +112,7 @@ public class CtrPagamento
         return flag;
     }
     
-    public boolean pagar(int codigo)
+    public boolean pagar(int codigo, double valor)
     {
         boolean flag;        
         
@@ -117,18 +123,23 @@ public class CtrPagamento
                 Object oc = new Caixa(Date.valueOf(LocalDate.now())).searchByToday();
                 
                 if(oc != null)
-                {               
-                    Pagamento obj = new Pagamento(codigo, Date.valueOf(LocalDate.now()));
-                    
-                    flag = obj.pagar();
-
-                    if(flag)
-                        Banco.getConexao().getConnection().commit();
-                    else
+                {       
+                    if((((Caixa)oc).getSaldo() - valor) >= 0)
                     {
-                        Banco.getConexao().getConnection().rollback();
-                        throw new SQLException("Erro ao efetuar Pagamento!");
+                        Pagamento obj = new Pagamento(codigo, Date.valueOf(LocalDate.now()));
+
+                        flag = obj.pagar();
+
+                        if(flag)
+                            Banco.getConexao().getConnection().commit();
+                        else
+                        {
+                            Banco.getConexao().getConnection().rollback();
+                            throw new SQLException("Erro ao efetuar Pagamento!");
+                        }
                     }
+                    else
+                        throw new SQLException("Fundos insuficiente...");
                 }
                 else
                     throw new SQLException("Caixa Fechado...");
@@ -155,6 +166,26 @@ public class CtrPagamento
         {
             if(Banco.isConectado())
                 list = new Pagamento().searchAllOpen();
+            else
+                throw new SQLException("Banco Off-Line...");
+        }
+        catch(SQLException ex)
+        {
+            Banco.getConexao().setMessagemErro(ex.getMessage());
+            System.out.println(ex.getMessage());
+        }
+        
+        return list;
+    }
+    
+    public ObservableList<Object> searchByAquisicao(Object aquisicao)
+    {
+        ObservableList<Object> list = FXCollections.observableArrayList();
+        
+        try
+        {
+            if(Banco.isConectado())
+                list = new Pagamento((Aquisicao)aquisicao).searchByAquisicao();
             else
                 throw new SQLException("Banco Off-Line...");
         }

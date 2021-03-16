@@ -205,21 +205,28 @@ public class CtrCaixa
                 if(oc != null)
                 {
                     Caixa caixa = (Caixa)(oc);                
-                    Despesa obj = new Despesa(new TipoDespesa(tipo), valor, Date.valueOf(LocalDate.now()), caixa, (Usuario)FXMLDocumentController.USER);
-
-                    flag = obj.insert();
-
-                    if(flag)
-                        Banco.getConexao().getConnection().commit();
-                    else
+                    double _valor = (tipo == 1 ? 1 : -1) * valor;
+                    
+                    if(caixa.getSaldo() + _valor >= 0)
                     {
-                        Banco.getConexao().getConnection().rollback();
-                        
-                        if(tipo == 1)
-                            throw new SQLException("Erro ao realizar Suprimento!");
+                        Despesa obj = new Despesa(new TipoDespesa(tipo), valor, Date.valueOf(LocalDate.now()), caixa, (Usuario)FXMLDocumentController.USER, "Movimentação de fundos do Caixa");
+
+                        flag = obj.insert();
+
+                        if(flag)
+                            Banco.getConexao().getConnection().commit();
                         else
-                            throw new SQLException("Erro ao realizar Sangria!");
+                        {
+                            Banco.getConexao().getConnection().rollback();
+
+                            if(tipo == 1)
+                                throw new SQLException("Erro ao realizar Suprimento!");
+                            else
+                                throw new SQLException("Erro ao realizar Sangria!");
+                        }
                     }
+                    else
+                        throw new SQLException("Fundos insuficiente...");
                 }
                 else
                     throw new SQLException("Caixa Fechado...");

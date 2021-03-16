@@ -1,16 +1,18 @@
 package Telas;
 
 import Controladoras.CtrAquisicao;
+import Controladoras.CtrCaixa;
 import Controladoras.CtrPagamento;
 import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ResourceBundle;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -47,8 +49,6 @@ public class FXMLPagamentoController implements Initializable
     @FXML
     private TableColumn<Object, Object> c_aquisicao;
     @FXML
-    private TableColumn<Object, Object> c_caixa;
-    @FXML
     private JFXTextField tb_parcela;
     @FXML
     private JFXTextField tb_valor;
@@ -70,7 +70,6 @@ public class FXMLPagamentoController implements Initializable
         c_parcela.setCellValueFactory(new PropertyValueFactory<Object, Integer>("parcela"));
         c_valor.setCellValueFactory(new PropertyValueFactory<Object, Double>("valor"));
         c_vencimento.setCellValueFactory(new PropertyValueFactory<Object, Date>("dt_venc"));
-        c_caixa.setCellValueFactory(new PropertyValueFactory<Object, Object>("caixa"));
         
         tb_aquisicao.setDisable(true);
         tb_caixa.setDisable(true);
@@ -92,7 +91,6 @@ public class FXMLPagamentoController implements Initializable
     private void clearCampos()
     {
         tb_aquisicao.clear();
-        tb_caixa.clear();
         tb_valor.clear();
         tb_parcela.clear();
         tb_vencimento.clear();
@@ -101,11 +99,19 @@ public class FXMLPagamentoController implements Initializable
     @FXML
     private void ClickPagar(ActionEvent event)
     {
-        int codigo = (int)CtrPagamento.instancia().getField(_selected, "codigo");
-        
-        CtrPagamento.instancia().pagar(codigo);
-        clearCampos();
-        setupCancela();
+        Object cx = CtrCaixa.instancia().searchByToday();
+            
+        if(cx != null)
+        {
+            int codigo = (int)CtrPagamento.instancia().getField(_selected, "codigo");
+            double valor = (double)CtrPagamento.instancia().getField(_selected, "valor");
+
+            CtrPagamento.instancia().pagar(codigo, valor);
+            clearCampos();
+            setupCancela();
+        }
+        else
+            new Alert(Alert.AlertType.ERROR, "Caixa Fehcado.", ButtonType.OK).show();
     }
 
     @FXML
@@ -120,7 +126,12 @@ public class FXMLPagamentoController implements Initializable
     @FXML
     private void ClickBuscar(ActionEvent event)
     {
-        table_pagamento.setItems(CtrPagamento.instancia().searchAllOpen());
+        Object cx = CtrCaixa.instancia().searchByToday();
+            
+        if(cx != null)
+            table_pagamento.setItems(CtrPagamento.instancia().searchAllOpen());
+        else
+            new Alert(Alert.AlertType.ERROR, "Caixa Fehcado.", ButtonType.OK).show();
     }
 
     @FXML
@@ -130,7 +141,6 @@ public class FXMLPagamentoController implements Initializable
         {
             _selected = table_pagamento.getSelectionModel().getSelectedItem();
             Object aqui = CtrPagamento.instancia().getField(_selected, "aquisicao");
-            
             
             tb_parcela.setText(String.valueOf((int)CtrPagamento.instancia().getField(_selected, "parcela")));
             tb_valor.setText(String.valueOf((double)CtrPagamento.instancia().getField(_selected, "valor")));

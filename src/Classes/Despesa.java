@@ -17,9 +17,15 @@ public class Despesa extends Movimento
     private Date data;
     private Caixa caixa;
     private Usuario user;
+    private String obs;
 
     public Despesa()
     {
+    }
+
+    public Despesa(int codigo)
+    {
+        this.codigo = codigo;
     }
 
     public Despesa(TipoDespesa tipo)
@@ -42,13 +48,14 @@ public class Despesa extends Movimento
         this.user = user;
     }
     
-    public Despesa(TipoDespesa tipo, double valor, Date data, Caixa caixa, Usuario user)
+    public Despesa(TipoDespesa tipo, double valor, Date data, Caixa caixa, Usuario user, String obs)
     {
         this.tipo = tipo;
         this.valor = valor;
         this.data = data;
         this.caixa = caixa;
         this.user = user;
+        this.obs = obs;
     }
 
     public Despesa(int codigo, TipoDespesa tipo, double valor, Date data, Caixa caixa, Usuario user)
@@ -59,6 +66,17 @@ public class Despesa extends Movimento
         this.data = data;
         this.caixa = caixa;
         this.user = user;
+    }
+
+    public Despesa(int codigo, TipoDespesa tipo, double valor, Date data, Caixa caixa, Usuario user, String obs)
+    {
+        this.codigo = codigo;
+        this.tipo = tipo;
+        this.valor = valor;
+        this.data = data;
+        this.caixa = caixa;
+        this.user = user;
+        this.obs = obs;
     }
 
     public int getCodigo()
@@ -91,10 +109,20 @@ public class Despesa extends Movimento
         return user;
     }
 
+    public String getObs()
+    {
+        return obs;
+    }
+
+    public void setObs(String obs)
+    {
+        this.obs = obs;
+    }
+    
     public boolean insert()
     {
-        String sql = "INSERT INTO Despesa(des_codigo, tipo_des_Codigo, des_valor, des_data, caixa_codigo, usu_login) ";
-        String values = "VALUES(?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Despesa(des_codigo, tipo_des_Codigo, des_valor, des_data, caixa_codigo, usu_login, des_obs) ";
+        String values = "VALUES(?, ?, ?, ?, ?, ?, ?)";
         
         try
         {
@@ -107,6 +135,7 @@ public class Despesa extends Movimento
             statement.setDate(4, data);
             statement.setString(5, caixa.getCodigo());
             statement.setString(6, user.getLogin());
+            statement.setString(7, obs);
 
             return statement.executeUpdate() > 0;
         }
@@ -156,7 +185,7 @@ public class Despesa extends Movimento
                 TipoDespesa tipo = (TipoDespesa)(new TipoDespesa(rs.getInt("tipo_des_codigo")).searchByCodigo());
                 Caixa caixa = new Caixa(rs.getString("caixa_codigo"));
                 
-                list.add(new Despesa(rs.getInt("des_codigo"), tipo, rs.getDouble("des_valor"), rs.getDate("des_data"), caixa, user));
+                list.add(new Despesa(rs.getInt("des_codigo"), tipo, rs.getDouble("des_valor"), rs.getDate("des_data"), caixa, user, rs.getString("des_obs")));
             }
         }
         catch(SQLException ex)
@@ -170,7 +199,7 @@ public class Despesa extends Movimento
     public ObservableList<Object> searchAll()
     {
         ObservableList<Object> list = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM Despesa";
+        String sql = "SELECT * FROM Despesa WHERE tipo_des_codigo > 2";
         
         try
         {
@@ -181,11 +210,11 @@ public class Despesa extends Movimento
             
             while(rs.next())
             {
-                Usuario user = (Usuario)(new Usuario(rs.getString("usu_login"), "").searchByLogin());
-                TipoDespesa tipo = (TipoDespesa)(new TipoDespesa(rs.getInt("")).searchByCodigo());
+                Usuario user = (Usuario)(new Usuario(rs.getString("usu_login"), "").searchByLogin().get(0));
+                TipoDespesa tipo = (TipoDespesa)(new TipoDespesa(rs.getInt("tipo_des_codigo")).searchByCodigo());
                 Caixa caixa = new Caixa(rs.getString("caixa_codigo"));
                 
-                list.add(new Despesa(rs.getInt("des_codigo"), tipo, rs.getDouble("des_valor"), rs.getDate("des_data"), caixa, user));
+                list.add(new Despesa(rs.getInt("des_codigo"), tipo, rs.getDouble("des_valor"), rs.getDate("des_data"), caixa, user, rs.getString("des_obs")));
             }
         }
         catch(SQLException ex)
@@ -215,8 +244,7 @@ public class Despesa extends Movimento
     public String toText()
     {
         String str = tipo.getNome() + " - " + codigo + " no caixa [" + caixa.getCodigo() + "]\n" +
-                     user.getLogin() + "\nR$ " +
-                     valor;
+                     "realizado por " + user.getLogin() + "\n no valor de R$ " + valor + "\n\n" + obs;
         
         return str;
     }

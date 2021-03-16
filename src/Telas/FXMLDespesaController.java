@@ -1,9 +1,8 @@
 package Telas;
 
-import Controladoras.CtrCliente;
+import Controladoras.CtrCaixa;
 import Controladoras.CtrDespesa;
 import Controladoras.CtrTipoDespesa;
-import Controladoras.CtrTipoMaterial;
 import JDBC.Banco;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
@@ -62,6 +61,8 @@ public class FXMLDespesaController implements Initializable
     private JFXDatePicker dp_data;
     @FXML
     private TextField tb_buscar;
+    @FXML
+    private JFXTextField tb_obs;
 
     @Override
     public void initialize(URL url, ResourceBundle rb)
@@ -78,9 +79,11 @@ public class FXMLDespesaController implements Initializable
         cb_filtro.getItems().add("Mes");
         cb_filtro.getSelectionModel().select(0);
         
+        btn_editar.setDisable(true);
+        
         cb_tipo.setItems(CtrTipoDespesa.instancia().searchAll());
         cb_tipo.getSelectionModel().select(0);
-        
+
         setupCancela();
     }    
 
@@ -98,7 +101,6 @@ public class FXMLDespesaController implements Initializable
     private void setupEditar()
     {
         btn_novo.setDisable(true);
-        btn_editar.setDisable(false);
         btn_excluir.setDisable(false);
         btn_cancelar.setText("Cancelar");
         
@@ -110,7 +112,6 @@ public class FXMLDespesaController implements Initializable
     {
         btn_novo.setDisable(false);
         btn_novo.setText("Novo");
-        btn_editar.setDisable(true);
         btn_excluir.setDisable(true);
         btn_cancelar.setText("Fechar");
         
@@ -125,6 +126,7 @@ public class FXMLDespesaController implements Initializable
         cb_tipo.setDisable(flag);
         tb_valor.setDisable(flag);
         dp_data.setDisable(flag);
+        tb_obs.setDisable(flag);
     }
     
     private void disableBusca(boolean flag)
@@ -140,6 +142,7 @@ public class FXMLDespesaController implements Initializable
         cb_tipo.getSelectionModel().selectFirst();
         tb_valor.clear();
         dp_data.setValue(LocalDate.now());
+        tb_obs.clear();
     }
     
     private boolean validaCampos()
@@ -167,26 +170,34 @@ public class FXMLDespesaController implements Initializable
     @FXML
     private void ClickNovo(ActionEvent event)
     {
-        if(btn_novo.getText().compareTo("Novo") != 0)
+        Object cx = CtrCaixa.instancia().searchByToday();
+        
+        if(cx != null)
         {
-            if(validaCampos())
+            if(btn_novo.getText().compareTo("Novo") != 0)
             {
-                Object tipo = cb_tipo.getValue();
-                double valor = Double.valueOf(tb_valor.getText());
-                                
-                if(CtrDespesa.instancia().insert(tipo, valor))
-                    new Alert(Alert.AlertType.INFORMATION, "Despesa Registrada!", ButtonType.OK).show();
-                else
+                if(validaCampos())
                 {
-                    new Alert(Alert.AlertType.ERROR, Banco.getConexao().getMensagemErro(), ButtonType.OK).show();
-                    System.out.println(Banco.getConexao().getMensagemErro());
+                    Object tipo = cb_tipo.getValue();
+                    double valor = Double.valueOf(tb_valor.getText());
+                    String obs = tb_obs.getText();
+
+                    if(CtrDespesa.instancia().insert(tipo, valor, obs))
+                        new Alert(Alert.AlertType.INFORMATION, "Despesa Registrada!", ButtonType.OK).show();
+                    else
+                    {
+                        new Alert(Alert.AlertType.ERROR, Banco.getConexao().getMensagemErro(), ButtonType.OK).show();
+                        System.out.println(Banco.getConexao().getMensagemErro());
+                    }
                 }
+
+                setupCancela();
             }
-            
-            setupCancela();
+            else
+                setupNovo();
         }
         else
-            setupNovo();
+            new Alert(Alert.AlertType.ERROR, "Caixa Fehcado.", ButtonType.OK).show();
     }
 
     @FXML
@@ -201,8 +212,9 @@ public class FXMLDespesaController implements Initializable
         if(new Alert(Alert.AlertType.CONFIRMATION, "Deseja excluir Despesa selecionado ?", ButtonType.YES, ButtonType.NO).showAndWait().get() == ButtonType.YES)
         {
             int codigo = (int)(CtrDespesa.instancia().getField(_selected, "codigo"));
-
-            if(CtrCliente.instancia().delete(codigo))
+            Object caixa = CtrDespesa.instancia().getField(_selected, "caixa");
+            
+            if(CtrDespesa.instancia().delete(codigo, caixa))
                 new Alert(Alert.AlertType.INFORMATION, "Despesa Excluida!", ButtonType.OK).show();
             else
             {
@@ -226,13 +238,27 @@ public class FXMLDespesaController implements Initializable
     @FXML
     private void ClickBuscar(ActionEvent event)
     {
+        Object cx = CtrCaixa.instancia().searchByToday();
         
+        if(cx != null)
+            table_despesa.setItems(CtrDespesa.instancia().searchByCaixa(cx));
+        else
+            new Alert(Alert.AlertType.ERROR, "Caixa Fehcado.", ButtonType.OK).show();
     }
 
     @FXML
     private void ClickTable(MouseEvent event)
     {
-        
+        if(table_despesa.getSelectionModel().getSelectedIndex() >= 0)
+        {
+            _selected = table_despesa.getSelectionModel().getSelectedItem();
+            
+            cb_tipo.setValue(CtrDespesa.instancia().getField(_selected, "tipo"));
+            tb_valor.setText((String)CtrDespesa.instancia().getField(_selected, "valor"));
+            dp_data.setValue(((Date)CtrDespesa.instancia().getField(_selected, "data")).toLocalDate());
+            
+            setupEditar();
+        }
     }
     
 }

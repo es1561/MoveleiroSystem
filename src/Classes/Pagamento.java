@@ -1,5 +1,6 @@
 package Classes;
 
+import Controladoras.CtrCaixa;
 import JDBC.Banco;
 import java.sql.Connection;
 import java.sql.Date;
@@ -44,6 +45,14 @@ public class Pagamento extends Movimento
         this.dt_pag = dt_pag;
     }
 
+    public Pagamento(double valor, int parcela, Date dt_venc, Caixa caixa)
+    {
+        this.valor = valor;
+        this.parcela = parcela;
+        this.dt_venc = dt_venc;
+        this.caixa = caixa;
+    }
+    
     public Pagamento(double valor, int parcela, Date dt_venc, Aquisicao aquisicao, Caixa caixa)
     {
         this.valor = valor;
@@ -136,8 +145,8 @@ public class Pagamento extends Movimento
     
     public boolean insert()
     {
-        String sql = "INSERT INTO Pagamento(pag_codigo, aqui_codigo, pag_valor, pag_dt_venc, pag_parcela, caixa_codigo) ";
-        String values = "VALUES(?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Pagamento(pag_codigo, aqui_codigo, pag_valor, pag_dt_venc, pag_parcela) ";
+        String values = "VALUES(?, ?, ?, ?, ?)";
         
         try
         {
@@ -145,11 +154,10 @@ public class Pagamento extends Movimento
             PreparedStatement statement = connection.prepareStatement(sql + values);
            
             statement.setInt(1, Banco.getConexao().getMaxPK("Pagamento", "pag_codigo") + 1);
-            statement.setInt(2, aquisicao.getCodigo());
+            statement.setString(2, aquisicao.getCodigo());
             statement.setDouble(3, valor);
             statement.setDate(4, dt_venc);
             statement.setInt(5, parcela);
-            statement.setString(6, caixa.getCodigo());
 
             return statement.executeUpdate() > 0;
         }
@@ -163,14 +171,17 @@ public class Pagamento extends Movimento
     
     public boolean pagar()
     {
-        String sql = "UPDATE Pagamento SET pag_dt_pag = ? WHERE pag_codigo =" + codigo;
+        String sql = "UPDATE Pagamento SET pag_dt_pag = ?, caixa_codigo = ? WHERE pag_codigo =" + codigo;
         
         try
         {
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
+            Caixa cx = (Caixa)CtrCaixa.instancia().searchByToday();
+            
             statement.setDate(1, dt_pag);
+            statement.setString(2, cx.getCodigo());
 
             return statement.executeUpdate() > 0;
         }
@@ -184,13 +195,15 @@ public class Pagamento extends Movimento
     
     public boolean clearItens()
     {
-        String sql = "DELETE FROM Pagamento WHERE aqui_codigo = " + aquisicao.getCodigo();
+        String sql = "DELETE FROM Pagamento WHERE aqui_codigo = ?";
         
         try
         {
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
+            statement.setString(1, aquisicao.getCodigo());
+            
             return statement.executeUpdate() > 0;
         }
         catch(SQLException ex)
@@ -203,7 +216,7 @@ public class Pagamento extends Movimento
     
     public boolean canEdit()
     {
-        String sql = "SELECT COUNT(*) AS n FROM Pagamento WHERE pag_dt_pag IS NOT NULL AND aqui_codigo = " + aquisicao.getCodigo();
+        String sql = "SELECT COUNT(*) AS n FROM Pagamento WHERE pag_dt_pag IS NOT NULL AND aqui_codigo = ?";
         boolean flag = false;
         
         try
@@ -211,6 +224,8 @@ public class Pagamento extends Movimento
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
+            statement.setString(1, aquisicao.getCodigo());
+            
             ResultSet rs = statement.executeQuery();
             
             if(rs.next())
@@ -227,19 +242,21 @@ public class Pagamento extends Movimento
     public ObservableList<Object> searchByAquisicao()
     {
         ObservableList<Object> list = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM Pagamento WHERE aqui_codigo = " + aquisicao.getCodigo();
+        String sql = "SELECT * FROM Pagamento WHERE aqui_codigo = ?";
         
         try
         {
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
+            statement.setString(1, aquisicao.getCodigo());
+            
             ResultSet rs = statement.executeQuery();
             
             while(rs.next())
             {
                 Caixa cx = new Caixa(rs.getString("caixa_codigo"));
-                Aquisicao aqui = new Aquisicao(rs.getInt("aqui_codigo"));
+                Aquisicao aqui = new Aquisicao(rs.getString("aqui_codigo"));
                 
                 list.add(new Pagamento(rs.getInt("pag_codigo"), rs.getDouble("pag_valor"), rs.getInt("pag_parcela"), rs.getDate("pag_dt_venc"), rs.getDate("pag_dt_pag"), aqui, cx));
             }
@@ -269,7 +286,7 @@ public class Pagamento extends Movimento
             while(rs.next())
             {
                 Caixa cx = new Caixa(rs.getString("caixa_codigo"));
-                Aquisicao aqui = (Aquisicao)new Aquisicao(rs.getInt("aqui_codigo")).searchByCodigo();
+                Aquisicao aqui = (Aquisicao)new Aquisicao(rs.getString("aqui_codigo")).searchByCodigo();
                 
                 list.add(new Pagamento(rs.getInt("pag_codigo"), rs.getDouble("pag_valor"), rs.getInt("pag_parcela"), rs.getDate("pag_dt_venc"), rs.getDate("pag_dt_pag"), aqui, cx));
             }
@@ -297,7 +314,7 @@ public class Pagamento extends Movimento
             while(rs.next())
             {
                 Caixa cx = new Caixa(rs.getString("caixa_codigo"));
-                Aquisicao aqui = (Aquisicao)new Aquisicao(rs.getInt("aqui_codigo")).searchByCodigo();
+                Aquisicao aqui = (Aquisicao)new Aquisicao(rs.getString("aqui_codigo")).searchByCodigo();
                 
                 
                 list.add(new Pagamento(rs.getInt("pag_codigo"), rs.getDouble("pag_valor"), rs.getInt("pag_parcela"), rs.getDate("pag_dt_venc"), rs.getDate("pag_dt_pag"), aqui, cx));
@@ -326,7 +343,7 @@ public class Pagamento extends Movimento
             while(rs.next())
             {
                 Caixa cx = new Caixa(rs.getString("caixa_codigo"));
-                Aquisicao aqui = (Aquisicao)new Aquisicao(rs.getInt("aqui_codigo")).searchByCodigo();
+                Aquisicao aqui = (Aquisicao)new Aquisicao(rs.getString("aqui_codigo")).searchByCodigo();
                 
                 
                 list.add(new Pagamento(rs.getInt("pag_codigo"), rs.getDouble("pag_valor"), rs.getInt("pag_parcela"), rs.getDate("pag_dt_venc"), rs.getDate("pag_dt_pag"), aqui, cx));
@@ -353,6 +370,14 @@ public class Pagamento extends Movimento
     @Override
     public String toString()
     {
-        return "Pagamento [" + valor + "]";
+        String str = "";
+        
+        if(dt_pag != null)//pago
+           str = "Pagamento [" + valor + "]";
+        else
+           str = parcela + "º " + "$ " + valor + " [" + dt_venc.toString() + "]"; 
+        
+        
+        return str;
     }
 }

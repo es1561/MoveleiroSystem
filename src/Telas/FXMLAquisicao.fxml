@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -42,118 +44,158 @@
          </children>
       </HBox>
    </top>
-   <bottom>
-      <VBox alignment="CENTER" fillWidth="false" prefHeight="250.0" prefWidth="960.0" BorderPane.alignment="CENTER">
+   <center>
+      <VBox prefHeight="480.0" prefWidth="700.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="900.0" spacing="25.0">
+            <HBox prefHeight="240.0" prefWidth="700.0">
                <children>
-                  <ComboBox fx:id="cb_filtro" prefWidth="125.0" />
-                  <TextField fx:id="tb_filtro" prefWidth="250.0" />
-                  <Button fx:id="btn_buscar" mnemonicParsing="false" onAction="#ClickBuscar" prefWidth="125.0" style="-fx-background-radius: 40;" text="Buscar">
+                  <VBox alignment="TOP_CENTER" fillWidth="false" prefHeight="200.0" prefWidth="320.0" spacing="5.0">
+                     <children>
+                        <JFXTextField fx:id="tb_item" labelFloat="true" onKeyReleased="#ChangeItem" prefWidth="250.0" promptText="Buscar Material">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </JFXTextField>
+                        <ListView fx:id="list_material" onMouseClicked="#ClickListMaterial" prefHeight="125.0" prefWidth="300.0" />
+                        <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="480.0" spacing="25.0">
+                           <children>
+                              <JFXTextField fx:id="tb_quant" labelFloat="true" onKeyReleased="#ChangeQuantidade" prefWidth="75.0" promptText="Quantidade">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </JFXTextField>
+                              <JFXTextField fx:id="tb_valor" labelFloat="true" onKeyReleased="#ChangeValor" prefWidth="75.0" promptText="Valor Uni.">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </JFXTextField>
+                              <Button fx:id="btn_adicionar" mnemonicParsing="false" onAction="#ClickAdicionar" prefWidth="100.0" style="-fx-background-radius: 100;" text="Adicionar">
+                                 <font>
+                                    <Font name="Consolas Bold" size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets top="15.0" />
+                     </padding>
+                  </VBox>
+                  <VBox alignment="TOP_CENTER" fillWidth="false" prefHeight="220.0" prefWidth="320.0">
+                     <children>
+                        <HBox alignment="CENTER" prefHeight="40.0" prefWidth="480.0">
+                           <children>
+                              <Label text="Lista">
+                                 <font>
+                                    <Font name="Consolas Bold Italic" size="18.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </Label>
+                              <Button fx:id="btn_remover" mnemonicParsing="false" onAction="#ClickRemover" prefWidth="100.0" style="-fx-background-radius: 100;" text="Remover">
+                                 <font>
+                                    <Font name="Consolas Bold" size="12.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets left="140.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <ListView fx:id="list_item" onMouseClicked="#ClickListItem" prefHeight="125.0" prefWidth="300.0" />
+                        <JFXTextField fx:id="tb_total" labelFloat="true" promptText="Total">
+                           <VBox.margin>
+                              <Insets left="160.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </JFXTextField>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <VBox alignment="CENTER" fillWidth="false" prefHeight="240.0" prefWidth="700.0">
+               <children>
+                  <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="700.0" spacing="25.0">
+                     <children>
+                        <ComboBox fx:id="cb_filtro" prefWidth="125.0" />
+                        <TextField fx:id="tb_filtro" prefWidth="250.0" />
+                        <Button fx:id="btn_buscar" mnemonicParsing="false" onAction="#ClickBuscar" prefWidth="125.0" style="-fx-background-radius: 40;" text="Buscar">
+                           <font>
+                              <Font name="Consolas" size="14.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <TableView fx:id="table_aquisicao" onMouseClicked="#ClickTable" prefHeight="180.0" prefWidth="680.0">
+                    <columns>
+                      <TableColumn fx:id="c_codigo" editable="false" prefWidth="125.0" resizable="false" text="Nota" />
+                        <TableColumn fx:id="c_fornecedor" editable="false" prefWidth="150.0" resizable="false" text="Fornecedor" />
+                      <TableColumn fx:id="c_data" editable="false" prefWidth="100.0" resizable="false" text="Data" />
+                        <TableColumn fx:id="c_parcela" editable="false" prefWidth="75.0" resizable="false" text="Nº Parcela" />
+                        <TableColumn fx:id="c_total" editable="false" prefWidth="100.0" resizable="false" text="Total" />
+                        <TableColumn fx:id="c_user" editable="false" prefWidth="130.0" resizable="false" text="Usuario" />
+                    </columns>
+                  </TableView>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </center>
+   <right>
+      <VBox alignment="TOP_CENTER" fillWidth="false" prefHeight="480.0" prefWidth="260.0" spacing="15.0" BorderPane.alignment="CENTER">
+         <children>
+            <JFXTextField fx:id="tb_nota" labelFloat="true" prefWidth="175.0" promptText="Nota" />
+            <JFXComboBox fx:id="cb_fornecedor" labelFloat="true" prefWidth="175.0" promptText="Fornecedor" />
+            <VBox alignment="CENTER" fillWidth="false" prefHeight="220.0" prefWidth="200.0">
+               <children>
+                  <Label text="Parcelas">
                      <font>
-                        <Font name="Consolas" size="14.0" />
+                        <Font name="Consolas Bold" size="18.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets right="90.0" />
+                     </VBox.margin>
+                  </Label>
+                  <JFXListView fx:id="list_parcela" onMouseClicked="#ClickListParcela" prefHeight="175.0" prefWidth="175.0" />
+               </children>
+            </VBox>
+            <HBox alignment="CENTER" fillHeight="false" prefHeight="30.0" prefWidth="200.0" spacing="5.0">
+               <children>
+                  <Button fx:id="btn_par_novo" mnemonicParsing="false" onAction="#ClickParNovo" prefWidth="100.0" text="Adicionar">
+                     <font>
+                        <Font name="Consolas Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btn_par_remover" mnemonicParsing="false" onAction="#ClickParRemover" prefWidth="100.0" text="Remover">
+                     <font>
+                        <Font name="Consolas Bold" size="12.0" />
                      </font>
                   </Button>
                </children>
             </HBox>
-            <TableView fx:id="table_aquisicao" onMouseClicked="#ClickTable" prefHeight="200.0" prefWidth="900.0">
-              <columns>
-                <TableColumn fx:id="c_codigo" editable="false" prefWidth="75.0" resizable="false" text="Codigo" />
-                  <TableColumn fx:id="c_fornecedor" editable="false" prefWidth="300.0" resizable="false" text="Fornecedor" />
-                <TableColumn fx:id="c_data" editable="false" prefWidth="100.0" resizable="false" text="Data" />
-                  <TableColumn fx:id="c_parcela" editable="false" prefWidth="75.0" resizable="false" text="Parcelas" />
-                  <TableColumn fx:id="c_total" editable="false" prefWidth="100.0" resizable="false" text="Total" />
-                  <TableColumn fx:id="c_user" editable="false" prefWidth="250.0" resizable="false" text="Usuario" />
-              </columns>
-            </TableView>
+            <JFXDatePicker fx:id="dp_parcela" editable="false" prefWidth="175.0" promptText="Vencimento" showWeekNumbers="true" />
+            <HBox alignment="CENTER" fillHeight="false" prefHeight="30.0" prefWidth="200.0" spacing="15.0">
+               <children>
+                  <JFXTextField fx:id="tb_parcela" labelFloat="true" onKeyReleased="#ChangeNParcela" prefWidth="50.0" promptText="Nº" />
+                  <JFXTextField fx:id="tb_par_valor" labelFloat="true" onKeyReleased="#ChangeValorParcela" prefWidth="100.0" promptText="Valor Parcela" />
+               </children>
+            </HBox>
          </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets top="15.0" />
+         </padding>
       </VBox>
-   </bottom>
-   <center>
-      <HBox alignment="CENTER" prefHeight="230.0" prefWidth="960.0" BorderPane.alignment="CENTER">
-         <children>
-            <VBox alignment="CENTER" fillWidth="false" prefHeight="220.0" prefWidth="320.0" spacing="25.0">
-               <children>
-                  <JFXTextField fx:id="tb_nota" labelFloat="true" prefWidth="235.0" promptText="Nota" />
-                  <JFXComboBox fx:id="cb_fornecedor" labelFloat="true" prefWidth="235.0" promptText="Fornecedor" />
-                  <HBox alignment="CENTER" prefHeight="40.0" prefWidth="480.0" spacing="25.0" />
-               </children>
-            </VBox>
-            <VBox alignment="TOP_CENTER" fillWidth="false" prefHeight="200.0" prefWidth="320.0" spacing="5.0">
-               <children>
-                  <JFXTextField fx:id="tb_item" labelFloat="true" onKeyReleased="#ChangeItem" prefWidth="250.0" promptText="Buscar Material">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </JFXTextField>
-                  <ListView fx:id="list_material" onMouseClicked="#ClickListMaterial" prefHeight="125.0" prefWidth="300.0" />
-                  <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="480.0" spacing="25.0">
-                     <children>
-                        <JFXTextField fx:id="tb_quant" labelFloat="true" onKeyPressed="#ChangeQuantidade" prefWidth="75.0" promptText="Quantidade">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </JFXTextField>
-                        <JFXTextField fx:id="tb_valor" labelFloat="true" onKeyPressed="#ChangeValor" prefWidth="75.0" promptText="Valor Uni.">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </JFXTextField>
-                        <Button fx:id="btn_adicionar" mnemonicParsing="false" onAction="#ClickAdicionar" prefWidth="100.0" style="-fx-background-radius: 100;" text="Adicionar">
-                           <font>
-                              <Font name="Consolas Bold" size="14.0" />
-                           </font>
-                        </Button>
-                     </children>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </HBox>
-               </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-               <padding>
-                  <Insets top="15.0" />
-               </padding>
-            </VBox>
-            <VBox alignment="TOP_CENTER" fillWidth="false" prefHeight="220.0" prefWidth="320.0">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="40.0" prefWidth="480.0">
-                     <children>
-                        <Label text="Lista">
-                           <font>
-                              <Font name="Consolas Bold Italic" size="18.0" />
-                           </font>
-                           <HBox.margin>
-                              <Insets />
-                           </HBox.margin>
-                        </Label>
-                        <Button fx:id="btn_remover" mnemonicParsing="false" onAction="#ClickRemover" prefWidth="100.0" style="-fx-background-radius: 100;" text="Remover">
-                           <font>
-                              <Font name="Consolas Bold" size="12.0" />
-                           </font>
-                           <HBox.margin>
-                              <Insets left="140.0" />
-                           </HBox.margin>
-                        </Button>
-                     </children>
-                  </HBox>
-                  <ListView fx:id="list_item" onMouseClicked="#ClickListItem" prefHeight="125.0" prefWidth="300.0" />
-                  <JFXTextField fx:id="tb_total" labelFloat="true" promptText="Total">
-                     <VBox.margin>
-                        <Insets left="160.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </JFXTextField>
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-   </center>
+   </right>
 </BorderPane>

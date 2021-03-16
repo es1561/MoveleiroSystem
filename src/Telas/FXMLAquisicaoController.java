@@ -1,12 +1,14 @@
 package Telas;
 
 import Controladoras.CtrAquisicao;
-import Controladoras.CtrCliente;
+import Controladoras.CtrCaixa;
 import Controladoras.CtrFornecedor;
 import Controladoras.CtrMaterial;
+import Controladoras.CtrPagamento;
 import JDBC.Banco;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
 import java.sql.Date;
@@ -21,7 +23,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -82,6 +83,18 @@ public class FXMLAquisicaoController implements Initializable
     private JFXTextField tb_quant;
     @FXML
     private JFXTextField tb_nota;
+    @FXML
+    private JFXListView<Object> list_parcela;
+    @FXML
+    private Button btn_par_novo;
+    @FXML
+    private Button btn_par_remover;
+    @FXML
+    private JFXTextField tb_parcela;
+    @FXML
+    private JFXTextField tb_par_valor;
+    @FXML
+    private JFXDatePicker dp_parcela;
 
     @Override
     public void initialize(URL url, ResourceBundle rb)
@@ -100,6 +113,9 @@ public class FXMLAquisicaoController implements Initializable
         cb_fornecedor.getSelectionModel().select(0);
         
         list_item.setItems(FXCollections.observableArrayList());
+        
+        dp_parcela.setValue(LocalDate.now());
+        list_parcela.setItems(FXCollections.observableArrayList());
         
         setupCancela();
     }    
@@ -151,6 +167,13 @@ public class FXMLAquisicaoController implements Initializable
         btn_adicionar.setDisable(true);
         btn_remover.setDisable(flag);
         list_item.setDisable(flag);
+        
+        list_parcela.setDisable(flag);
+        tb_par_valor.setDisable(flag);
+        dp_parcela.setDisable(flag);
+        tb_parcela.setDisable(flag);
+        btn_par_novo.setDisable(true);
+        btn_par_remover.setDisable(true);
     }
     
     private void disableBusca(boolean flag)
@@ -169,7 +192,8 @@ public class FXMLAquisicaoController implements Initializable
         tb_quant.clear();
         tb_valor.clear();
         tb_total.clear();
-        list_material.setItems(null);       
+        list_material.setItems(FXCollections.observableArrayList());    
+        list_parcela.setItems(FXCollections.observableArrayList());
         list_item.setItems(FXCollections.observableArrayList());
         table_aquisicao.getItems().clear();
     }
@@ -179,10 +203,31 @@ public class FXMLAquisicaoController implements Initializable
         boolean flag = true;
         String str = "";
         
-        if(list_item.getItems().isEmpty())
+        if(tb_nota.getText().isEmpty())
         {
             flag = false;
-            str = "Sem itens na lista";
+            str = "Nota não informada.";
+        }
+        else if(list_item.getItems().isEmpty())
+        {
+            flag = false;
+            str = "Sem itens na lista.";
+        }
+        else if(list_parcela.getItems().isEmpty())
+        {
+            flag = false;
+            str = "Aquisição sem parcelas.";
+        }
+        else if(!list_item.getItems().isEmpty() && !list_parcela.getItems().isEmpty())
+        {
+            double total = Double.valueOf(tb_total.getText());
+            double ptotal = CtrAquisicao.instancia().totalParcelas(list_parcela.getItems());
+            
+            if((total - ptotal) != 0)
+            {
+                flag = false;
+                str = "Valor de pagamento incompativeil ao valor da aquisição.";
+            }
         }
         
         if(!flag)
@@ -198,23 +243,32 @@ public class FXMLAquisicaoController implements Initializable
         {
             if(validaCampos())
             {
+                String codigo = tb_nota.getText();
                 Object forn = cb_fornecedor.getSelectionModel().getSelectedItem();
-                int parc = 1;
+                int parc = list_parcela.getItems().size();
                 double total = Double.valueOf(tb_total.getText());
-                
-                if(CtrAquisicao.instancia().insert(forn, parc, total, list_item.getItems()))
+
+                if(CtrAquisicao.instancia().insert(codigo, forn, parc, total, list_item.getItems(), list_parcela.getItems()))
+                {
                     new Alert(Alert.AlertType.INFORMATION, "Aquisição Cadastrada!", ButtonType.OK).show();
+                    setupCancela();
+                }
                 else
                 {
                     new Alert(Alert.AlertType.ERROR, Banco.getConexao().getMensagemErro(), ButtonType.OK).show();
                     System.out.println(Banco.getConexao().getMensagemErro());
                 }
             }
-            
-            setupCancela();
         }
         else
-            setupNovo();
+        {
+            Object cx = CtrCaixa.instancia().searchByToday();
+            
+            if(cx != null)
+                setupNovo();
+            else
+                new Alert(Alert.AlertType.ERROR, "Caixa Fehcado.", ButtonType.OK).show();
+        }
     }
 
     @FXML
@@ -222,13 +276,16 @@ public class FXMLAquisicaoController implements Initializable
     {
         if(validaCampos())
         {
-            int codigo = (int)CtrAquisicao.instancia().getField(_selected, "codigo");
+            String codigo = (String)CtrAquisicao.instancia().getField(_selected, "codigo");
             Object forn = cb_fornecedor.getSelectionModel().getSelectedItem();
-            int parc = 1;
+            int parc = list_parcela.getItems().size();
             double total = Double.valueOf(tb_total.getText());
 
-            if(CtrAquisicao.instancia().update(codigo, forn, parc, total, list_item.getItems()))
+            if(CtrAquisicao.instancia().update(codigo, forn, parc, total, list_item.getItems(), list_parcela.getItems()))
+            {
                 new Alert(Alert.AlertType.INFORMATION, "Aquisição Alterada!", ButtonType.OK).show();
+                setupCancela();
+            }
             else
             {
                 new Alert(Alert.AlertType.ERROR, Banco.getConexao().getMensagemErro(), ButtonType.OK).show();
@@ -236,7 +293,7 @@ public class FXMLAquisicaoController implements Initializable
             }
         }
 
-        setupCancela();
+        
     }
 
     @FXML
@@ -244,7 +301,7 @@ public class FXMLAquisicaoController implements Initializable
     {
         if(new Alert(Alert.AlertType.CONFIRMATION, "Deseja excluir Aquisição selecionada ?", ButtonType.YES, ButtonType.NO).showAndWait().get() == ButtonType.YES)
         {
-            int codigo = (int)CtrAquisicao.instancia().getField(_selected, "codigo");
+            String codigo = (String)CtrAquisicao.instancia().getField(_selected, "codigo");
 
             if(CtrAquisicao.instancia().delete(codigo))
                 new Alert(Alert.AlertType.INFORMATION, "Aquisição Excluida!", ButtonType.OK).show();
@@ -283,6 +340,8 @@ public class FXMLAquisicaoController implements Initializable
             cb_fornecedor.getSelectionModel().select(CtrAquisicao.instancia().getField(_selected, "obj_forn"));
             tb_total.setText(Double.toString((double)CtrAquisicao.instancia().getField(_selected, "total")));
             list_item.setItems(CtrAquisicao.instancia().getItens(_selected));
+            tb_nota.setText((String)CtrAquisicao.instancia().getField(_selected, "codigo"));
+            list_parcela.setItems(CtrPagamento.instancia().searchByAquisicao(_selected));
             
             setupEditar();
         }
@@ -357,7 +416,7 @@ public class FXMLAquisicaoController implements Initializable
         boolean f_quant = tb_quant.getText().length() == 0;
         boolean f_valor = tb_valor.getText().length() == 0;
         
-        btn_adicionar.setDisable(f_quant && f_valor);
+        btn_adicionar.setDisable(f_quant || f_valor);
     }
 
     @FXML
@@ -366,13 +425,74 @@ public class FXMLAquisicaoController implements Initializable
         boolean f_quant = tb_quant.getText().length() == 0;
         boolean f_valor = tb_valor.getText().length() == 0;
         
-        btn_adicionar.setDisable(f_quant && f_valor);
+        btn_adicionar.setDisable(f_quant || f_valor);
     }
 
     @FXML
     private void ClickListItem(MouseEvent event)
     {
         btn_remover.setDisable(list_item.getSelectionModel().getSelectedIndex() == -1);
+    }
+
+    @FXML
+    private void ClickListParcela(MouseEvent event)
+    {
+        btn_par_remover.setDisable(false);
+    }
+
+    @FXML
+    private void ClickParNovo(ActionEvent event)
+    {
+        double valor = Double.valueOf(tb_par_valor.getText());
+        int parcela = Integer.valueOf(tb_parcela.getText());
+        Date data = Date.valueOf(dp_parcela.getValue());
+        
+        Object obj = CtrPagamento.instancia().makeObject(valor, parcela, data);
+        
+        if(obj != null)
+        {
+            tb_parcela.clear();
+            tb_par_valor.clear();
+            dp_parcela.setValue(LocalDate.now());
+            
+            list_parcela.getItems().add(obj);
+            list_parcela.refresh();
+            
+            btn_par_novo.setDisable(true);
+            btn_par_remover.setDisable(true);
+        }
+        else
+            new Alert(Alert.AlertType.ERROR, "Caixa Fehcado.", ButtonType.OK).show();
+    }
+
+    @FXML
+    private void ClickParRemover(ActionEvent event)
+    {
+        if(list_parcela.getSelectionModel().getSelectedIndex() >= 0)
+        {
+            list_parcela.getItems().remove(list_parcela.getSelectionModel().getSelectedIndex());
+            list_parcela.refresh();
+        }
+        
+        btn_par_remover.setDisable(true);
+    }
+
+    @FXML
+    private void ChangeValorParcela(KeyEvent event)
+    {
+        boolean f_par = tb_parcela.getText().length() == 0;
+        boolean f_par_valor = tb_par_valor.getText().length() == 0;
+        
+        btn_par_novo.setDisable(f_par || f_par_valor);
+    }
+
+    @FXML
+    private void ChangeNParcela(KeyEvent event)
+    {
+        boolean f_par = tb_parcela.getText().length() == 0;
+        boolean f_par_valor = tb_par_valor.getText().length() == 0;
+        
+        btn_par_novo.setDisable(f_par || f_par_valor);
     }
     
 }

@@ -65,7 +65,8 @@ public class CtrUsuario
     
     public Object login(String login, String senha)
     {
-        Object obj = new Usuario(login, senha).searchByLogin().get(0);
+        ObservableList<Object> list = new Usuario(login, senha).searchByLogin();
+        Object obj = list.size() > 0 ? list.get(0) : null;
         Usuario user = obj != null ? ((Usuario) obj) : null;
         
         if(user != null && user.getSenha().compareTo(senha) != 0)

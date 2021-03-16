@@ -95,13 +95,13 @@ public class ItemAquisicao
             PreparedStatement statement = connection.prepareStatement(sql + values);
 
             statement.setInt(1, Banco.getConexao().getMaxPK("ItemAquisicao", "item_aqui_codigo") + 1);
-            statement.setInt(2, aquisicao.getCodigo());
+            statement.setString(2, aquisicao.getCodigo());
             statement.setInt(3, material.getCodigo());
             statement.setInt(4, quant);
             statement.setDouble(5, valor);
             
 
-            return statement.executeUpdate() > 0;
+            return statement.executeUpdate() > 0 && material.addEstoque(quant);
         }
         catch(SQLException ex)
         {
@@ -113,14 +113,31 @@ public class ItemAquisicao
     
     public boolean clearItens()
     {
-        String sql = "DELETE FROM ItemAquisicao WHERE aqui_codigo = " + aquisicao.getCodigo();
+        String sql = "DELETE FROM ItemAquisicao WHERE aqui_codigo = ?";
         
         try
         {
+            ObservableList<Object> list = new ItemAquisicao(aquisicao).searchByAquisicao();
+            boolean flag = false;
+
+            if(list.size() > 0)
+            {
+                flag = true;
+                for (int i = 0; flag && i < list.size(); i++)
+                {
+                    ItemAquisicao item = (ItemAquisicao)list.get(i);
+
+                    item.setAquisicao(aquisicao);
+                    flag = item.getMaterial().addEstoque(-item.getQuant());
+                }
+            }
+            
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
-            return statement.executeUpdate() > 0;
+            statement.setString(1, aquisicao.getCodigo());
+            
+            return flag && statement.executeUpdate() > 0;
         }
         catch(SQLException ex)
         {
@@ -133,13 +150,15 @@ public class ItemAquisicao
     public ObservableList<Object> searchByAquisicao()
     {
         ObservableList<Object> list = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM ItemAquisicao WHERE aqui_codigo = " + aquisicao.getCodigo();
+        String sql = "SELECT * FROM ItemAquisicao WHERE aqui_codigo = ?";
         
         try
         {
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
+            statement.setString(1, aquisicao.getCodigo());
+            
             ResultSet rs = statement.executeQuery();
             
             while(rs.next())

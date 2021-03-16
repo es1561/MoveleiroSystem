@@ -102,7 +102,7 @@ public class FXMLCaixaController implements Initializable
     {
         if(btn_caixa.getText().compareTo("Abrir Caixa") == 0)
         {
-            if(CtrCaixa.instancia().insert(100))
+            if(CtrCaixa.instancia().insert(50))
             {
                 new Alert(Alert.AlertType.INFORMATION, "Caixa Aberto!", ButtonType.OK).show();
                 _selected = CtrCaixa.instancia().searchByToday();

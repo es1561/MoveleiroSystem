@@ -12,7 +12,7 @@ import javafx.collections.ObservableList;
 
 public class Aquisicao
 {
-    private int codigo;
+    private String codigo;
     private Date data;
     private double total;
     private int parcelas;
@@ -24,7 +24,7 @@ public class Aquisicao
     {
     }
 
-    public Aquisicao(int codigo)
+    public Aquisicao(String codigo)
     {
         this.codigo = codigo;
     }
@@ -38,7 +38,7 @@ public class Aquisicao
         this.forn = forn;
     }
 
-    public Aquisicao(int codigo, Date data, double total, int parcelas, Usuario user, Fornecedor forn)
+    public Aquisicao(String codigo, Date data, double total, int parcelas, Usuario user, Fornecedor forn)
     {
         this.codigo = codigo;
         this.data = data;
@@ -48,7 +48,7 @@ public class Aquisicao
         this.forn = forn;
     }
 
-    public int getCodigo()
+    public String getCodigo()
     {
         return codigo;
     }
@@ -98,7 +98,7 @@ public class Aquisicao
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql + values);
 
-            statement.setInt(1, Banco.getConexao().getMaxPK("Aquisicao", "aqui_codigo") + 1);
+            statement.setString(1, codigo);
             statement.setDate(2, data);
             statement.setDouble(3, total);
             statement.setInt(4, parcelas);
@@ -123,14 +123,11 @@ public class Aquisicao
         {
             for (int i = 0; flag && i < itens.size(); i++)
             {
-                Object item = itens.get(i);
+                ItemAquisicao item = (ItemAquisicao)itens.get(i);
                 
-                ((ItemAquisicao)item).setAquisicao(this);
-                flag = ((ItemAquisicao)item).insert();
+                item.setAquisicao(this);
+                flag = item.insert();
             }
-            
-            for(int i = 1; flag && i <= parcelas; i++)
-                flag = CtrPagamento.instancia().insert(total / parcelas, i, this);
         }
         
         return flag;
@@ -138,7 +135,7 @@ public class Aquisicao
     
     private boolean updateSelf()
     {
-        String sql = "UPDATE Aquisicao SET aqui_total = ?, aqui_parcelas = ?, usu_login = ?, for_cod = ? WHERE aqui_codigo = " + codigo;
+        String sql = "UPDATE Aquisicao SET aqui_total = ?, aqui_parcelas = ?, usu_login = ?, for_cod = ? WHERE aqui_codigo = ?";
         
         try
         {
@@ -149,6 +146,7 @@ public class Aquisicao
             statement.setInt(2, parcelas);
             statement.setString(3, user.getLogin());
             statement.setInt(4, forn.getCodigo());
+            statement.setString(5, codigo);
 
             return statement.executeUpdate() > 0;
         }
@@ -174,19 +172,11 @@ public class Aquisicao
                 {
                     for (int i = 0; flag && i < itens.size(); i++)
                     {
-                        Object item = itens.get(i);
+                        ItemAquisicao item = (ItemAquisicao)itens.get(i);
 
-                        ((ItemAquisicao)item).setAquisicao(this);
-                        flag = ((ItemAquisicao)item).insert();
+                        item.setAquisicao(this);
+                        flag = item.insert();
                     }
-                }
-                
-                flag = new Pagamento(this).clearItens();
-                
-                if(flag)
-                {
-                    for (int i = 1; flag && i <= parcelas; i++)
-                        flag = CtrPagamento.instancia().insert(total / parcelas, i, this);
                 }
             }
         }
@@ -196,13 +186,15 @@ public class Aquisicao
     
     private boolean deleteSelf()
     {
-        String sql = "DELETE FROM Aquisicao WHERE aqui_codigo = " + codigo;
+        String sql = "DELETE FROM Aquisicao WHERE aqui_codigo = ?";
         
         try
         {
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
+            statement.setString(1, codigo);
+            
             return statement.executeUpdate() > 0;
         }
         catch(SQLException ex)
@@ -227,20 +219,22 @@ public class Aquisicao
     public Object searchByCodigo()
     {
         Object obj = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM Aquisicao WHERE aqui_codigo = " + codigo;
+        String sql = "SELECT * FROM Aquisicao WHERE aqui_codigo = ?";
         
         try
         {
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
+            statement.setString(1, codigo);
+            
             ResultSet rs = statement.executeQuery();
             
             if(rs.next())
             {
                 Usuario _user = (Usuario) new Usuario(rs.getString("usu_login"), "").searchByLogin().get(0);
                 Fornecedor _forn = (Fornecedor) new Fornecedor(rs.getInt("for_cod")).searchByCodigo();
-                Aquisicao aqui = new Aquisicao(rs.getInt("aqui_codigo"), rs.getDate("aqui_data"), rs.getDouble("aqui_total"), rs.getInt("aqui_parcelas"), _user, _forn);
+                Aquisicao aqui = new Aquisicao(rs.getString("aqui_codigo"), rs.getDate("aqui_data"), rs.getDouble("aqui_total"), rs.getInt("aqui_parcelas"), _user, _forn);
                 ObservableList<Object> itens = new ItemAquisicao(aqui).searchByAquisicao();
                 
                 aqui.setItens(itens);
@@ -271,7 +265,7 @@ public class Aquisicao
             {
                 Usuario _user = (Usuario) new Usuario(rs.getString("usu_login"), "").searchByLogin().get(0);
                 Fornecedor _forn = (Fornecedor) new Fornecedor(rs.getInt("for_cod")).searchByCodigo();
-                Aquisicao aqui = new Aquisicao(rs.getInt("aqui_codigo"), rs.getDate("aqui_data"), rs.getDouble("aqui_total"), rs.getInt("aqui_parcelas"), _user, _forn);
+                Aquisicao aqui = new Aquisicao(rs.getString("aqui_codigo"), rs.getDate("aqui_data"), rs.getDouble("aqui_total"), rs.getInt("aqui_parcelas"), _user, _forn);
                 ObservableList<Object> itens = new ItemAquisicao(aqui).searchByAquisicao();
                 
                 aqui.setItens(itens);
@@ -301,7 +295,7 @@ public class Aquisicao
         {
             ItemAquisicao obj = (ItemAquisicao)item;
             
-            str += obj.toString() + "[" + obj.getValor() + "]\n";
+            str += obj.toString() + " [" + obj.getValor() + "]\n";
         }
         
         return str;

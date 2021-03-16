@@ -125,7 +125,19 @@ public class CtrAquisicao
         return total;
     }
     
-    public boolean insert(Object forn, int parc, Double total, ObservableList<Object> itens)
+    public double totalParcelas(ObservableList<Object> itens)
+    {
+        double total = 0;
+        
+        for (Object item : itens)
+        {
+            total += ((Pagamento)item).getValor();
+        }
+        
+        return total;
+    }
+    
+    public boolean insert(String codigo, Object forn, int parc, Double total, ObservableList<Object> itens, ObservableList<Object> parcelas)
     {
         boolean flag;        
         
@@ -137,11 +149,19 @@ public class CtrAquisicao
                 
                 if(oc != null)
                 {               
-                    Aquisicao obj = new Aquisicao(Date.valueOf(LocalDate.now()), total, parc, (Usuario)FXMLDocumentController.USER, (Fornecedor)forn);
+                    Aquisicao obj = new Aquisicao(codigo, Date.valueOf(LocalDate.now()), total, parc, (Usuario)FXMLDocumentController.USER, (Fornecedor)forn);
                     obj.setItens(itens);
                     
                     flag = obj.insert();
 
+                    for (int i = 0; flag && i < parcelas.size(); i++)
+                    {
+                        Pagamento par = (Pagamento)parcelas.get(i);
+                        
+                        par.setAquisicao(obj);
+                        flag = par.insert();
+                    }
+                    
                     if(flag)
                         Banco.getConexao().getConnection().commit();
                     else
@@ -167,7 +187,7 @@ public class CtrAquisicao
         return flag;
     }
     
-    public boolean update(int codigo, Object forn, int parc, Double total, ObservableList<Object> itens)
+    public boolean update(String codigo, Object forn, int parc, Double total, ObservableList<Object> itens, ObservableList<Object> parcelas)
     {
         boolean flag;        
         
@@ -181,11 +201,21 @@ public class CtrAquisicao
                 {               
                     if(new Pagamento(new Aquisicao(codigo)).canEdit())
                     {
-                        Aquisicao obj = new Aquisicao(Date.valueOf(LocalDate.now()), total, parc, (Usuario)FXMLDocumentController.USER, (Fornecedor)forn);
+                        Aquisicao obj = new Aquisicao(codigo, Date.valueOf(LocalDate.now()), total, parc, (Usuario)FXMLDocumentController.USER, (Fornecedor)forn);
                         obj.setItens(itens);
 
                         flag = obj.update();
 
+                        flag = new Pagamento(obj).clearItens();
+                        
+                        for (int i = 0; flag && i < parcelas.size(); i++)
+                        {
+                            Pagamento par = (Pagamento)parcelas.get(i);
+
+                            par.setAquisicao(obj);
+                            flag = par.insert();
+                        }
+                        
                         if(flag)
                             Banco.getConexao().getConnection().commit();
                         else
@@ -214,7 +244,7 @@ public class CtrAquisicao
         return flag;
     }
     
-    public boolean delete(int codigo)
+    public boolean delete(String codigo)
     {
         boolean flag;        
         

@@ -78,7 +78,26 @@ CREATE TABLE public.Despesa (
                 des_data DATE NOT NULL,
                 caixa_codigo VARCHAR(15) NOT NULL,
                 usu_login VARCHAR(20) NOT NULL,
+                des_obs VARCHAR(50),
                 CONSTRAINT pk_despesa PRIMARY KEY (des_codigo, tipo_des_codigo)
+);
+
+
+CREATE TABLE public.Acerto (
+                ace_codigo INTEGER NOT NULL,
+                usu_login VARCHAR(20) NOT NULL,
+                ace_data DATE NOT NULL,
+                ace_obs VARCHAR(50),
+                CONSTRAINT pk_acerto PRIMARY KEY (ace_codigo, usu_login)
+);
+
+
+CREATE TABLE public.ItemAcerto (
+                mat_codigo INTEGER NOT NULL,
+                ace_codigo INTEGER NOT NULL,
+                usu_login VARCHAR(20) NOT NULL,
+                item_reci_quant INTEGER NOT NULL,
+                CONSTRAINT pk_itemrecibo PRIMARY KEY (mat_codigo, ace_codigo, usu_login)
 );
 
 
@@ -128,7 +147,7 @@ CREATE TABLE public.Fornecedores (
 
 
 CREATE TABLE public.Aquisicao (
-                aqui_codigo INTEGER NOT NULL,
+                aqui_codigo VARCHAR(20) NOT NULL,
                 aqui_data DATE NOT NULL,
                 aqui_total NUMERIC(10,2) NOT NULL,
                 aqui_parcelas INTEGER NOT NULL,
@@ -138,39 +157,20 @@ CREATE TABLE public.Aquisicao (
 );
 
 
-CREATE TABLE public.Acerto (
-                ace_codigo INTEGER NOT NULL,
-                usu_login VARCHAR(20) NOT NULL,
-                ace_data DATE NOT NULL,
-                ace_obs VARCHAR(50),
-                aqui_codigo INTEGER NOT NULL,
-                CONSTRAINT pk_acerto PRIMARY KEY (ace_codigo, usu_login)
-);
-
-
-CREATE TABLE public.ItemAcerto (
-                mat_codigo INTEGER NOT NULL,
-                ace_codigo INTEGER NOT NULL,
-                usu_login VARCHAR(20) NOT NULL,
-                item_reci_quant INTEGER NOT NULL,
-                CONSTRAINT pk_itemrecibo PRIMARY KEY (mat_codigo, ace_codigo, usu_login)
-);
-
-
 CREATE TABLE public.Pagamento (
                 pag_codigo INTEGER NOT NULL,
-                aqui_codigo INTEGER NOT NULL,
+                aqui_codigo VARCHAR(20) NOT NULL,
                 pag_valor NUMERIC(10,2) NOT NULL,
                 pag_dt_venc DATE NOT NULL,
                 pag_dt_pag DATE,
                 pag_parcela INTEGER NOT NULL,
-                caixa_codigo VARCHAR(15) NOT NULL,
+                caixa_codigo VARCHAR(15),
                 CONSTRAINT pk_pagamento PRIMARY KEY (pag_codigo, aqui_codigo)
 );
 
 
 CREATE TABLE public.ItemAquisicao (
-                aqui_codigo INTEGER NOT NULL,
+                aqui_codigo VARCHAR(20) NOT NULL,
                 mat_codigo INTEGER NOT NULL,
                 item_aqui_codigo INTEGER NOT NULL,
                 item_aqui_valor NUMERIC(10,2) NOT NULL,
@@ -291,6 +291,13 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
+ALTER TABLE public.ItemAcerto ADD CONSTRAINT acerto_itemacerto_fk
+FOREIGN KEY (ace_codigo, usu_login)
+REFERENCES public.Acerto (ace_codigo, usu_login)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
 ALTER TABLE public.Recebimento ADD CONSTRAINT venda_recebimento_fk
 FOREIGN KEY (ven_codigo, cli_codigo)
 REFERENCES public.Venda (ven_codigo, cli_codigo)
@@ -322,20 +329,6 @@ NOT DEFERRABLE;
 ALTER TABLE public.Pagamento ADD CONSTRAINT aquisicao_pagamento_fk
 FOREIGN KEY (aqui_codigo)
 REFERENCES public.Aquisicao (aqui_codigo)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.Acerto ADD CONSTRAINT aquisicao_acerto_fk
-FOREIGN KEY (aqui_codigo)
-REFERENCES public.Aquisicao (aqui_codigo)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.ItemAcerto ADD CONSTRAINT acerto_itemacerto_fk
-FOREIGN KEY (ace_codigo, usu_login)
-REFERENCES public.Acerto (ace_codigo, usu_login)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;

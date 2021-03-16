@@ -21,9 +21,10 @@
             <HBox alignment="CENTER" prefHeight="40.0" prefWidth="480.0" spacing="20.0">
                <children>
                   <JFXTextField fx:id="tb_valor" labelFloat="true" prefWidth="150.0" promptText="Valor" />
-                  <JFXDatePicker fx:id="dp_data" prefWidth="150.0" />
+                  <JFXDatePicker fx:id="dp_data" editable="false" overLay="true" prefWidth="150.0" />
                </children>
             </HBox>
+            <JFXTextField fx:id="tb_obs" labelFloat="true" prefWidth="320.0" promptText="OBS" />
          </children></VBox>
    </center>
    <top>
