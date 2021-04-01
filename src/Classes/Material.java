@@ -224,7 +224,10 @@ public class Material
             statement.setInt(1, estoque + value);
             statement.setInt(2, codigo);
 
-            return statement.executeUpdate() > 0;
+            if((estoque + value) >= 0)
+                return statement.executeUpdate() > 0;
+            else
+                throw new SQLException("Estoque insuficiente!\nEstoque Atual: " + estoque + "; Entrada: " + Math.abs(value));
         }
         catch(SQLException ex)
         {

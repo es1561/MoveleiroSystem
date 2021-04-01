@@ -88,50 +88,48 @@ CREATE TABLE public.Acerto (
                 usu_login VARCHAR(20) NOT NULL,
                 ace_data DATE NOT NULL,
                 ace_obs VARCHAR(50),
-                CONSTRAINT pk_acerto PRIMARY KEY (ace_codigo, usu_login)
+                CONSTRAINT pk_acerto PRIMARY KEY (ace_codigo)
 );
 
 
 CREATE TABLE public.ItemAcerto (
                 mat_codigo INTEGER NOT NULL,
                 ace_codigo INTEGER NOT NULL,
-                usu_login VARCHAR(20) NOT NULL,
                 item_reci_quant INTEGER NOT NULL,
-                CONSTRAINT pk_itemrecibo PRIMARY KEY (mat_codigo, ace_codigo, usu_login)
+                CONSTRAINT pk_itemrecibo PRIMARY KEY (mat_codigo, ace_codigo)
 );
 
 
 CREATE TABLE public.Venda (
                 ven_codigo INTEGER NOT NULL,
-                cli_codigo INTEGER NOT NULL,
                 ven_data DATE NOT NULL,
                 ven_total NUMERIC(10,2) NOT NULL,
                 ven_parcelas INTEGER NOT NULL,
                 usu_login VARCHAR(20) NOT NULL,
-                CONSTRAINT pk_venda PRIMARY KEY (ven_codigo, cli_codigo)
+                cli_codigo INTEGER NOT NULL,
+                CONSTRAINT pk_venda PRIMARY KEY (ven_codigo)
 );
 
 
 CREATE TABLE public.ItemVenda (
                 mat_codigo INTEGER NOT NULL,
+                item_ven_codigo INTEGER NOT NULL,
                 ven_codigo INTEGER NOT NULL,
-                cli_codigo INTEGER NOT NULL,
                 item_ven_valor NUMERIC(10,2) NOT NULL,
                 item_ven_quant INTEGER NOT NULL,
-                CONSTRAINT pk_itemvenda PRIMARY KEY (mat_codigo, ven_codigo, cli_codigo)
+                CONSTRAINT pk_itemvenda PRIMARY KEY (mat_codigo, item_ven_codigo, ven_codigo)
 );
 
 
 CREATE TABLE public.Recebimento (
                 rec_codigo INTEGER NOT NULL,
                 ven_codigo INTEGER NOT NULL,
-                cli_codigo INTEGER NOT NULL,
                 rec_valor NUMERIC(10,2) NOT NULL,
-                rec_dt_venc NUMERIC NOT NULL,
+                rec_dt_venc DATE NOT NULL,
                 rec_dt_pag DATE NOT NULL,
                 rec_parcela INTEGER NOT NULL,
                 caixa_codigo VARCHAR(15) NOT NULL,
-                CONSTRAINT pk_recebimento PRIMARY KEY (rec_codigo, ven_codigo, cli_codigo)
+                CONSTRAINT pk_recebimento PRIMARY KEY (rec_codigo, ven_codigo)
 );
 
 
@@ -292,22 +290,22 @@ ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE public.ItemAcerto ADD CONSTRAINT acerto_itemacerto_fk
-FOREIGN KEY (ace_codigo, usu_login)
-REFERENCES public.Acerto (ace_codigo, usu_login)
+FOREIGN KEY (ace_codigo)
+REFERENCES public.Acerto (ace_codigo)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE public.Recebimento ADD CONSTRAINT venda_recebimento_fk
-FOREIGN KEY (ven_codigo, cli_codigo)
-REFERENCES public.Venda (ven_codigo, cli_codigo)
+FOREIGN KEY (ven_codigo)
+REFERENCES public.Venda (ven_codigo)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE public.ItemVenda ADD CONSTRAINT venda_itemvenda_fk
-FOREIGN KEY (ven_codigo, cli_codigo)
-REFERENCES public.Venda (ven_codigo, cli_codigo)
+FOREIGN KEY (ven_codigo)
+REFERENCES public.Venda (ven_codigo)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.261" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Telas.FXMLRecebimentoController">
+   <bottom>
+      <VBox alignment="CENTER" fillWidth="false" prefHeight="260.0" prefWidth="960.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="900.0" spacing="25.0">
+               <children>
+                  <ComboBox fx:id="cb_filtro" prefWidth="125.0" />
+                  <TextField fx:id="tb_filtro" prefWidth="250.0" />
+                  <Button fx:id="btn_buscar" mnemonicParsing="false" onAction="#ClickBuscar" prefWidth="125.0" style="-fx-background-radius: 40;" text="Buscar">
+                     <font>
+                        <Font name="Consolas" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            <TableView fx:id="table_pagamento" onMouseClicked="#ClickTable" prefHeight="200.0" prefWidth="600.0">
+              <columns>
+                <TableColumn fx:id="c_codigo" editable="false" prefWidth="75.0" resizable="false" text="Codigo" />
+                <TableColumn fx:id="c_aquisicao" editable="false" prefWidth="200.0" resizable="false" text="Venda" />
+                  <TableColumn fx:id="c_parcela" editable="false" prefWidth="75.0" resizable="false" text="Parcela" />
+                  <TableColumn fx:id="c_valor" editable="false" prefWidth="100.0" resizable="false" text="Valor" />
+                  <TableColumn fx:id="c_vencimento" editable="false" prefWidth="150.0" resizable="false" text="Vencimento" />
+              </columns>
+            </TableView>
+         </children>
+      </VBox>
+   </bottom>
+   <center>
+      <HBox alignment="CENTER" fillHeight="false" prefHeight="220.0" prefWidth="960.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox alignment="CENTER" fillWidth="false" prefHeight="220.0" prefWidth="300.0" spacing="20.0">
+               <children>
+                  <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="300.0" spacing="20.0">
+                     <children>
+                        <JFXTextField fx:id="tb_parcela" labelFloat="true" prefWidth="100.0" promptText="Parcela" />
+                        <JFXTextField fx:id="tb_valor" labelFloat="true" prefWidth="100.0" promptText="Valor" />
+                     </children>
+                  </HBox>
+                  <JFXTextField fx:id="tb_vencimento" labelFloat="true" prefWidth="220.0" promptText="Vencimento" />
+                  <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="300.0" spacing="20.0">
+                     <children>
+                        <JFXTextField fx:id="tb_aquisicao" labelFloat="true" prefWidth="100.0" promptText="Venda" />
+                        <JFXTextField fx:id="tb_caixa" labelFloat="true" prefWidth="100.0" promptText="Caixa" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" fillWidth="false" prefHeight="220.0" prefWidth="300.0">
+               <children>
+                  <Label text="Venda">
+                     <font>
+                        <Font name="Consolas Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <TextArea fx:id="ta_aquisicao" prefHeight="180.0" prefWidth="250.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </center>
+   <top>
+      <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="200.0" spacing="50.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="btn_pagar" mnemonicParsing="false" onAction="#ClickPagar" prefWidth="200.0" style="-fx-background-radius: 100;" text="Receber">
+               <font>
+                  <Font name="Consolas Bold" size="13.0" />
+               </font>
+            </Button>
+            <Button fx:id="btn_cancela" mnemonicParsing="false" onAction="#ClickCancela" prefWidth="200.0" style="-fx-background-radius: 100;" text="Cancelar">
+               <font>
+                  <Font name="Consolas Bold" size="13.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </top>
+</BorderPane>

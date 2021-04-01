@@ -2,11 +2,7 @@ package moveleirosystem;
 
 import Controladoras.CtrUsuario;
 import java.net.URL;
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ResourceBundle;
-import java.util.TimeZone;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -202,6 +198,7 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void ClickOperacaoAcerto(ActionEvent event)
     {
+        loadNode("FXMLAcerto.fxml");
     }
 
     @FXML
@@ -224,11 +221,13 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void ClickOperacaoRecebimento(ActionEvent event)
     {
+        loadNode("FXMLRecebimento.fxml");
     }
 
     @FXML
     private void ClickOperacaoVenda(ActionEvent event)
     {
+        loadNode("FXMLVenda.fxml");
     }
 
     @FXML

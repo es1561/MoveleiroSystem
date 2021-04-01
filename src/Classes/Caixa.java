@@ -126,11 +126,17 @@ public class Caixa
                 else
                     value -= des.getValor();
             }
-            if(obj instanceof Pagamento)
+            else if(obj instanceof Pagamento)
             {
                 Pagamento pag = (Pagamento)obj;
                 
                 value -= pag.getValor();
+            }
+            else if(obj instanceof Recebimento)
+            {
+                Recebimento rec = (Recebimento)obj;
+                
+                value += rec.getValor();
             }
         }
         
@@ -300,15 +306,19 @@ public class Caixa
                 Usuario user_a = (Usuario)(new Usuario(rs.getString("usu_login_a"), "").searchByLogin().get(0));
                 Usuario user_f = rs.getString("usu_login_f") != null ? (Usuario)(new Usuario(rs.getString("usu_login_f"), "").searchByLogin().get(0)) : null;
                 Caixa caixa = new Caixa(rs.getString("caixa_codigo"), rs.getDate("caixa_data"), user_a, user_f, rs.getString("caixa_hora_a"), rs.getString("caixa_hora_f"), rs.getDouble("caixa_valor_a"), rs.getDouble("caixa_valor_f"), rs.getString("caixa_status"));
-                ObservableList<Object> _list = FXCollections.observableArrayList(), _list_des, _list_pag;
+                ObservableList<Object> _list = FXCollections.observableArrayList(), _list_des, _list_pag, _list_rec;
                 
                 _list_des = new Despesa(caixa).searchByCaixa();
                 _list_pag = new Pagamento(caixa).searchByCaixa();
+                _list_rec = new Recebimento(caixa).searchByCaixa();
                 
                 for (Object item : _list_des)
                     _list.add(item);
                 
                 for (Object item : _list_pag)
+                    _list.add(item);
+                
+                for (Object item : _list_rec)
                     _list.add(item);
                 
                 caixa.setList(_list);

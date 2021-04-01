@@ -232,10 +232,33 @@ public class Cliente
         return list;
     }
     
+    public Object searchByCodigo()
+    {
+        Object list = null;
+        String sql = "SELECT * FROM Cliente WHERE cli_codigo = " + codigo;
+        
+        try
+        {
+            Connection connection = Banco.getConexao().getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet rs = statement.executeQuery();
+            
+            if(rs.next())
+                list = new Cliente(rs.getInt("cli_codigo"), rs.getString("cli_nome"), rs.getString("cli_cpf"), rs.getString("cli_fone"), rs.getString("cli_email"), rs.getString("cli_cep"), rs.getString("cli_cidade"), rs.getString("cli_endereco"));
+        }
+        catch(SQLException ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+        
+        return list;
+    }
+    
     public ObservableList<Object> searchByCpf()
     {
         ObservableList<Object> list = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM Cliente WHERE cli_cpf = '" + cpf + "'";
+        String sql = "SELECT * FROM Cliente WHERE cli_cpf LIKE '" + cpf + "%'";
         
         try
         {
@@ -322,5 +345,11 @@ public class Cliente
         }
         
         return list;
+    }
+
+    @Override
+    public String toString()
+    {
+        return nome + " [" + cpf + "]";
     }
 }

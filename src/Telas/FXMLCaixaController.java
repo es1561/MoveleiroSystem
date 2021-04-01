@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -17,6 +18,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import moveleirosystem.FXMLDocumentController;
 
 public class FXMLCaixaController implements Initializable
@@ -45,6 +47,8 @@ public class FXMLCaixaController implements Initializable
     private Button btn_suprimento;
     @FXML
     private TextArea ta_movimento;
+    @FXML
+    private Button btn_refresh;
 
     @Override
     public void initialize(URL url, ResourceBundle rb)
@@ -176,4 +180,18 @@ public class FXMLCaixaController implements Initializable
         }
     }
 
+    @FXML
+    private void ClickRefresh(ActionEvent event)
+    {
+        try
+        {   
+            Pane newLoadedPane = FXMLLoader.load(getClass().getResource("/Telas/FXMLCaixa.fxml"));
+            FXMLDocumentController.PANE.getChildren().clear();
+            FXMLDocumentController.PANE.getChildren().add(newLoadedPane);
+        }
+        catch(Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
 }

@@ -9,45 +9,45 @@ import java.sql.SQLException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class Aquisicao
+public class Venda
 {
-    private String codigo;
+    private int codigo;
     private Date data;
     private double total;
     private int parcelas;
     private Usuario user;
-    private Fornecedor forn;
+    private Cliente cliente;
     private ObservableList<Object> itens;
 
-    public Aquisicao()
+    public Venda()
     {
     }
 
-    public Aquisicao(String codigo)
+    public Venda(int codigo)
     {
         this.codigo = codigo;
     }
 
-    public Aquisicao(Date data, double total, int parcelas, Usuario user, Fornecedor forn)
+    public Venda(Date data, double total, int parcelas, Usuario user, Cliente cliente)
     {
         this.data = data;
         this.total = total;
         this.parcelas = parcelas;
         this.user = user;
-        this.forn = forn;
+        this.cliente = cliente;
     }
 
-    public Aquisicao(String codigo, Date data, double total, int parcelas, Usuario user, Fornecedor forn)
+    public Venda(int codigo, Date data, double total, int parcelas, Usuario user, Cliente cliente)
     {
         this.codigo = codigo;
         this.data = data;
         this.total = total;
         this.parcelas = parcelas;
         this.user = user;
-        this.forn = forn;
+        this.cliente = cliente;
     }
 
-    public String getCodigo()
+    public int getCodigo()
     {
         return codigo;
     }
@@ -72,9 +72,9 @@ public class Aquisicao
         return user;
     }
 
-    public Fornecedor getForn()
+    public Cliente getCliente()
     {
-        return forn;
+        return cliente;
     }
     
     public ObservableList<Object> getItens()
@@ -89,7 +89,7 @@ public class Aquisicao
     
     private boolean insertSelf()
     {
-        String sql = "INSERT INTO Aquisicao(aqui_codigo, aqui_data, aqui_total, aqui_parcelas, usu_login, for_cod) ";
+        String sql = "INSERT INTO Venda(ven_codigo, ven_data, ven_total, ven_parcelas, usu_login, cli_codigo) ";
         String values = "VALUES(?, ?, ?, ?, ?, ?)";
         
         try
@@ -97,12 +97,12 @@ public class Aquisicao
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql + values);
 
-            statement.setString(1, codigo);
+            statement.setInt(1, codigo);
             statement.setDate(2, data);
             statement.setDouble(3, total);
             statement.setInt(4, parcelas);
             statement.setString(5, user.getLogin());
-            statement.setInt(6, forn.getCodigo());
+            statement.setInt(6, cliente.getCodigo());
 
             return statement.executeUpdate() > 0;
         }
@@ -122,9 +122,9 @@ public class Aquisicao
         {
             for (int i = 0; flag && i < itens.size(); i++)
             {
-                ItemAquisicao item = (ItemAquisicao)itens.get(i);
+                ItemVenda item = (ItemVenda)itens.get(i);
                 
-                item.setAquisicao(this);
+                item.setVenda(this);
                 flag = item.insert();
             }
         }
@@ -134,7 +134,7 @@ public class Aquisicao
     
     private boolean updateSelf()
     {
-        String sql = "UPDATE Aquisicao SET aqui_total = ?, aqui_parcelas = ?, usu_login = ?, for_cod = ? WHERE aqui_codigo = ?";
+        String sql = "UPDATE Venda SET ven_total = ?, ven_parcelas = ?, usu_login = ?, cli_codigo = ? WHERE ven_codigo = ?";
         
         try
         {
@@ -144,8 +144,8 @@ public class Aquisicao
             statement.setDouble(1, total);
             statement.setInt(2, parcelas);
             statement.setString(3, user.getLogin());
-            statement.setInt(4, forn.getCodigo());
-            statement.setString(5, codigo);
+            statement.setInt(4, cliente.getCodigo());
+            statement.setInt(5, codigo);
 
             return statement.executeUpdate() > 0;
         }
@@ -163,17 +163,17 @@ public class Aquisicao
         
         if(flag)
         {
-            if(new Pagamento(this).canEdit())
+            if(new Recebimento(this).canEdit())
             {
-                flag = new ItemAquisicao(this).clearItens();
+                flag = new ItemVenda(this).clearItens();
 
                 if(flag)
                 {
                     for (int i = 0; flag && i < itens.size(); i++)
                     {
-                        ItemAquisicao item = (ItemAquisicao)itens.get(i);
+                        ItemVenda item = (ItemVenda)itens.get(i);
 
-                        item.setAquisicao(this);
+                        item.setVenda(this);
                         flag = item.insert();
                     }
                 }
@@ -185,14 +185,14 @@ public class Aquisicao
     
     private boolean deleteSelf()
     {
-        String sql = "DELETE FROM Aquisicao WHERE aqui_codigo = ?";
+        String sql = "DELETE FROM Venda WHERE ven_codigo = ?";
         
         try
         {
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
-            statement.setString(1, codigo);
+            statement.setInt(1, codigo);
             
             return statement.executeUpdate() > 0;
         }
@@ -206,8 +206,8 @@ public class Aquisicao
     
     public boolean delete()
     {
-        boolean flag = new ItemAquisicao(this).clearItens();
-        boolean flag2 = new Pagamento(this).clearItens();
+        boolean flag = new ItemVenda(this).clearItens();
+        boolean flag2 = new Recebimento(this).clearItens();
         
         if(flag && flag2)
             flag = deleteSelf();
@@ -218,23 +218,23 @@ public class Aquisicao
     public Object searchByCodigo()
     {
         Object obj = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM Aquisicao WHERE aqui_codigo = ?";
+        String sql = "SELECT * FROM Venda WHERE ven_codigo = ?";
         
         try
         {
             Connection connection = Banco.getConexao().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
 
-            statement.setString(1, codigo);
+            statement.setInt(1, codigo);
             
             ResultSet rs = statement.executeQuery();
             
             if(rs.next())
             {
                 Usuario _user = (Usuario) new Usuario(rs.getString("usu_login"), "").searchByLogin().get(0);
-                Fornecedor _forn = (Fornecedor) new Fornecedor(rs.getInt("for_cod")).searchByCodigo();
-                Aquisicao aqui = new Aquisicao(rs.getString("aqui_codigo"), rs.getDate("aqui_data"), rs.getDouble("aqui_total"), rs.getInt("aqui_parcelas"), _user, _forn);
-                ObservableList<Object> itens = new ItemAquisicao(aqui).searchByAquisicao();
+                Cliente _cliente = (Cliente) new Cliente(rs.getInt("cli_codigo")).searchByCodigo();
+                Venda aqui = new Venda(rs.getInt("ven_codigo"), rs.getDate("ven_data"), rs.getDouble("ven_total"), rs.getInt("ven_parcelas"), _user, _cliente);
+                ObservableList<Object> itens = new ItemVenda(aqui).searchByVenda();
                 
                 aqui.setItens(itens);
                 obj = aqui;
@@ -251,7 +251,7 @@ public class Aquisicao
     public ObservableList<Object> searchAll()
     {
         ObservableList<Object> list = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM Aquisicao";
+        String sql = "SELECT * FROM Venda";
         
         try
         {
@@ -263,9 +263,9 @@ public class Aquisicao
             while(rs.next())
             {
                 Usuario _user = (Usuario) new Usuario(rs.getString("usu_login"), "").searchByLogin().get(0);
-                Fornecedor _forn = (Fornecedor) new Fornecedor(rs.getInt("for_cod")).searchByCodigo();
-                Aquisicao aqui = new Aquisicao(rs.getString("aqui_codigo"), rs.getDate("aqui_data"), rs.getDouble("aqui_total"), rs.getInt("aqui_parcelas"), _user, _forn);
-                ObservableList<Object> itens = new ItemAquisicao(aqui).searchByAquisicao();
+                Cliente _cliente = (Cliente) new Cliente(rs.getInt("cli_codigo")).searchByCodigo();
+                Venda aqui = new Venda(rs.getInt("ven_codigo"), rs.getDate("ven_data"), rs.getDouble("ven_total"), rs.getInt("ven_parcelas"), _user, _cliente);
+                ObservableList<Object> itens = new ItemVenda(aqui).searchByVenda();
                 
                 aqui.setItens(itens);
                 list.add(aqui);
@@ -287,12 +287,12 @@ public class Aquisicao
     
     public String toText()
     {
-        String str = "Aquisição - " + codigo + " com " + forn.getNome() + "\n" +
-                     "Efetuada por [" + user.getLogin() + "]\n no valor total de R$ " + total + "\n\nItens da Aquisição\n";
+        String str = "Venda - " + codigo + " para " + cliente.getNome() + "\n" +
+                     "Efetuada por [" + user.getLogin() + "]\n no valor total de R$ " + total + "\n\nItens da Venda\n";
         
         for (Object item : itens)
         {
-            ItemAquisicao obj = (ItemAquisicao)item;
+            ItemVenda obj = (ItemVenda)item;
             
             str += obj.toString() + " [" + obj.getValor() + "]\n";
         }

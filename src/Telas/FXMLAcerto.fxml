@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.261" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Telas.FXMLAcertoController">
+   <top>
+      <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="960.0" spacing="25.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="btn_novo" mnemonicParsing="false" onAction="#ClickNovo" prefWidth="125.0" style="-fx-background-radius: 40;" text="Novo">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="btn_editar" mnemonicParsing="false" onAction="#ClickEditar" prefWidth="125.0" style="-fx-background-radius: 40;" text="Editar">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="btn_excluir" mnemonicParsing="false" onAction="#ClickExcluir" prefWidth="125.0" style="-fx-background-radius: 40;" text="Exluir">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="btn_cancelar" mnemonicParsing="false" onAction="#ClickCancelar" prefWidth="125.0" style="-fx-background-radius: 40;" text="Cancelar">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </top>
+   <center>
+      <VBox prefHeight="480.0" prefWidth="700.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="TOP_CENTER" prefHeight="240.0" prefWidth="700.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" fillWidth="false" prefHeight="200.0" prefWidth="320.0" spacing="5.0">
+                     <children>
+                        <JFXTextField fx:id="tb_item" labelFloat="true" onKeyReleased="#ChangeItem" prefWidth="250.0" promptText="Buscar Material">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </JFXTextField>
+                        <ListView fx:id="list_material" onMouseClicked="#ClickListMaterial" prefHeight="125.0" prefWidth="300.0" />
+                        <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="480.0" spacing="25.0">
+                           <children>
+                              <Button fx:id="btn_adicionar" mnemonicParsing="false" onAction="#ClickAdicionar" prefWidth="100.0" style="-fx-background-radius: 100;" text="Adicionar">
+                                 <font>
+                                    <Font name="Consolas Bold" size="14.0" />
+                                 </font>
+                              </Button>
+                              <JFXTextField fx:id="tb_quant" labelFloat="true" onKeyReleased="#ChangeQuantidade" prefWidth="75.0" promptText="Quantidade">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </JFXTextField>
+                              <Button fx:id="btn_mat_remover" mnemonicParsing="false" onAction="#ClickMatRemover" prefWidth="100.0" style="-fx-background-radius: 100;" text="Remover">
+                                 <font>
+                                    <Font name="Consolas Bold" size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets top="15.0" />
+                     </padding>
+                  </VBox>
+                  <VBox alignment="TOP_CENTER" fillWidth="false" prefHeight="220.0" prefWidth="320.0">
+                     <children>
+                        <HBox alignment="CENTER" prefHeight="40.0" prefWidth="480.0">
+                           <children>
+                              <Label text="Lista">
+                                 <font>
+                                    <Font name="Consolas Bold Italic" size="18.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </Label>
+                              <Button fx:id="btn_remover" mnemonicParsing="false" onAction="#ClickRemover" prefWidth="100.0" style="-fx-background-radius: 100;" text="Remover">
+                                 <font>
+                                    <Font name="Consolas Bold" size="12.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets left="140.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <ListView fx:id="list_item" onMouseClicked="#ClickListItem" prefHeight="125.0" prefWidth="300.0" />
+                        <JFXTextField fx:id="tb_obs" labelFloat="true" onKeyReleased="#ChangeItem" prefWidth="250.0" promptText="Obs">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="15.0" />
+                           </VBox.margin>
+                        </JFXTextField>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <VBox alignment="CENTER" fillWidth="false" prefHeight="240.0" prefWidth="700.0">
+               <children>
+                  <HBox alignment="CENTER" fillHeight="false" prefHeight="40.0" prefWidth="700.0" spacing="25.0">
+                     <children>
+                        <ComboBox fx:id="cb_filtro" prefWidth="125.0" />
+                        <TextField fx:id="tb_filtro" prefWidth="250.0" />
+                        <Button fx:id="btn_buscar" mnemonicParsing="false" onAction="#ClickBuscar" prefWidth="125.0" style="-fx-background-radius: 40;" text="Buscar">
+                           <font>
+                              <Font name="Consolas" size="14.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <TableView fx:id="table_aquisicao" onMouseClicked="#ClickTable" prefHeight="180.0" prefWidth="680.0">
+                    <columns>
+                      <TableColumn fx:id="c_codigo" editable="false" prefWidth="125.0" resizable="false" text="Codigo" />
+                        <TableColumn fx:id="c_user" editable="false" prefWidth="130.0" resizable="false" text="Usuario" />
+                      <TableColumn fx:id="c_data" editable="false" prefWidth="100.0" resizable="false" text="Data" />
+                        <TableColumn fx:id="c_fornecedor" editable="false" prefWidth="325.0" resizable="false" text="Obs" />
+                    </columns>
+                  </TableView>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>
